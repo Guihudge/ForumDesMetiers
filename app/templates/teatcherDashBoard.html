@@ -24,6 +24,7 @@
     </ul>
 
     <h2 class="mt-5">Status</h2>
+    {% if nbStudent >= 1 %}
     <div class="list-group">
         <div class="list-group-item">
             <strong>Nombre de métiers :</strong> {{ jobsNb }}
@@ -35,7 +36,11 @@
             <strong>Nombre d'élèves ayant fait leurs voeux :</strong> {{ nbWish }} ({{ (nbWish*100)//nbStudent }} %)
         </div>
     </div>
-
+    {% else %}
+    <div class="list-group">
+        Auccun élève enregistré
+    </div>
+    {% endif %}
     <div class="mt-4">
         <a href="{{ url_for('summary') }}" class="btn btn-primary">Résumé global</a>
     </div>

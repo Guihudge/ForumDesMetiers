@@ -17,8 +17,10 @@
         {{ form.hidden_tag() }}
         
         <!-- Champs du formulaire -->
+        {{ render_field(form.displayName) }}
         {{ render_field(form.username) }}
         {{ render_field(form.password) }}
+        {{ render_field(form.classe) }}
         {{ render_field(form.rightLevel) }}
 
         <!-- Bouton de soumission -->

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField
+from wtforms.validators import DataRequired, ValidationError, regexp
 from app import db
 import sqlalchemy as sa
 from app.models import Jobs
@@ -43,7 +43,14 @@ class MakeWish(FlaskForm):
         return True
 
 class RegisterForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    displayName = StringField('Nom prénom', validators=[DataRequired()])
+    username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+    classe = StringField('Classe', validators=[DataRequired()])
     rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Proffesseur")], validators=[DataRequired()])
     submit = SubmitField('Validé')
+
+class BatchRegister(FlaskForm):
+    file = FileField("Lsite au format csv.", validators=[DataRequired()])
+    classe = StringField('Classe', validators=[DataRequired()])
+    submit = SubmitField('Envoyé')

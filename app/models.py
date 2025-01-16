@@ -13,9 +13,11 @@ class User(UserMixin, db.Model):
                                                 unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     rightLevel: so.Mapped[int] = so.mapped_column(sa.Integer(), default=0)
+    displayName: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=True)
+    classe: so.Mapped[str] = so.mapped_column(sa.String(8), nullable=True)
 
     def __repr__(self):
-        return '<User {}, AccessLevel {}>'.format(self.username, self.rightLevel)
+        return '<Username {}, DisplayName {}, Classe {}, AccessLevel {}>'.format(self.username, self.displayName, self.classe, self.rightLevel)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -9,3 +9,6 @@ password: `e`
 Compte Prof:
 username: `Prof`
 password: `prof`
+
+admin
+L8XDA9d2G7xiAXqOfA

@@ -4,9 +4,12 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import *
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister
 from flask import request
 from app.utils import convertjobsListToDict
+import csv
+
+UPLOAD_PATH="./upload/"
 
 @app.route('/')
 @app.route('/index')
@@ -136,9 +139,10 @@ def summary():
         for u in Users:
             w = db.session.scalar(sa.select(WhishList).where(WhishList.id == u.id))
             if w is None:
-                s.append([u.username, "--", "--", "--", "--", "--"])
+                s.append([u.displayName if u.displayName is not None else u.username, u.classe,"--", "--", "--", "--", "--"])
             else:
-                local = [u.username]
+                
+                local = [u.displayName if u.displayName is not None else u.username , u.classe]
                 local.append(jobs[w.first])
                 local.append(jobs[w.second])
                 local.append(jobs[w.third])
@@ -157,10 +161,39 @@ def registerUser():
     else:
         form = RegisterForm()
         if form.validate_on_submit():
-            u = User(username=form.username.data)
+            u = User(username=form.username.data, displayName=form.displayName.data, classe=form.classe.data)
             u.set_password(form.password.data)
             u.set_access(form.rightLevel.data)
             db.session.add(u)
             db.session.commit()
             return redirect(url_for('dashboard'))
         return render_template("registerUser.html", form=form)
+    
+@app.route("/batchRegister", methods=['GET','POST'])
+@login_required
+def batchRegister():
+    user:User = current_user
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        form = BatchRegister()
+        if form.validate_on_submit():
+            file = request.files[form.file.name]
+            file.save(UPLOAD_PATH + "tmp.csv")
+            csvfile = open(UPLOAD_PATH + "tmp.csv")
+            spamreader = csv.reader(csvfile, delimiter=';', quotechar='"')
+            for row in spamreader:
+                if row[0] != '\ufeff':
+                    low = row[0].lower()
+                    lowSplit = low.split(" ")
+                    login = lowSplit[-1][0]+lowSplit[0]
+                    pwd = row[2].replace("/","")
+                    
+                    u = User(username=login, displayName=row[0], classe=form.classe.data)
+                    u.set_access(0)
+                    u.set_password(pwd)
+                    db.session.add(u)
+            db.session.commit()
+
+
+        return render_template("batch_register.html", form=form)
