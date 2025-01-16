@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired, ValidationError
 from app import db
 import sqlalchemy as sa
@@ -19,3 +19,11 @@ class JobsCreationForm(FlaskForm):
         jobs = db.session.scalar(sa.select(Jobs).where(Jobs.Name == jobs.data))
         if jobs is not None:
             raise ValidationError("Métier déjà crée")
+
+class MakeWish(FlaskForm):
+    first = SelectField("1er voeux:")
+    second = SelectField("2e voeux:")
+    third = SelectField("3e voeux:")
+    fourth = SelectField("4e voeux:")
+    fifth = SelectField("5e voeux:")
+    submit = SubmitField('Validé')

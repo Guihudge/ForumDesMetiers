@@ -74,3 +74,24 @@ def jobsCreation():
 def jobsList():
     jobs = db.session.scalars(sa.select(Jobs)).all()
     return render_template("jobsList.html", jobs=jobs)
+
+@app.route("/jobselection")
+@login_required
+def jobselection():
+    user:User = current_user
+    if user.rightLevel != 0:
+        return redirect(url_for('dashboard'))
+    else:
+        # Jobs selection
+        jobs = db.session.scalars(sa.select(Jobs)).all()
+        form = WhishList()
+        jobsList = [(i.id, i.Name) for i in jobs]
+        form.first.choices = jobsList
+        form.second.choices = jobsList
+        form.third.choices = jobsList
+        form.fourth.choices = jobsList
+        form.fifth.choices = jobsList
+        if form.validate_on_submit():
+            w = WhishList(id=user, )
+            pass
+        return render_template("jobsSelection.html", form=form)
