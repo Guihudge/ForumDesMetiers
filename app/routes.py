@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import *
-from app.forms import LoginForm, JobsCreationForm
+from app.forms import LoginForm, JobsCreationForm, MakeWish
 from flask import request
 from urllib.parse import urlsplit
 
@@ -75,7 +75,7 @@ def jobsList():
     jobs = db.session.scalars(sa.select(Jobs)).all()
     return render_template("jobsList.html", jobs=jobs)
 
-@app.route("/jobselection")
+@app.route("/jobselection", methods=['GET', 'POST'])
 @login_required
 def jobselection():
     user:User = current_user
@@ -84,7 +84,7 @@ def jobselection():
     else:
         # Jobs selection
         jobs = db.session.scalars(sa.select(Jobs)).all()
-        form = WhishList()
+        form = MakeWish()
         jobsList = [(i.id, i.Name) for i in jobs]
         form.first.choices = jobsList
         form.second.choices = jobsList
@@ -92,6 +92,9 @@ def jobselection():
         form.fourth.choices = jobsList
         form.fifth.choices = jobsList
         if form.validate_on_submit():
-            w = WhishList(id=user, )
-            pass
+            print(form.first.data)
+            w = WhishList(id=user.id, first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
+            db.session.add(w)
+            db.session.commit()
+            return redirect(url_for('dashboard'))
         return render_template("jobsSelection.html", form=form)

@@ -27,3 +27,17 @@ class MakeWish(FlaskForm):
     fourth = SelectField("4e voeux:")
     fifth = SelectField("5e voeux:")
     submit = SubmitField('Validé')
+
+    def validate(self, extra_validators):
+        if not super().validate():
+            return False
+
+        # Récupérer les valeurs des champs
+        wishes = [self.first.data, self.second.data, self.third.data, self.fourth.data, self.fifth.data]
+
+        # Vérifier les doublons
+        if len(wishes) != len(set(wishes)):
+            self.first.errors.append("Les vœux doivent être différents.")
+            return False
+        
+        return True
