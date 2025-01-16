@@ -21,11 +21,11 @@ class JobsCreationForm(FlaskForm):
             raise ValidationError("Métier déjà crée")
 
 class MakeWish(FlaskForm):
-    first = SelectField("1er voeux:")
-    second = SelectField("2e voeux:")
-    third = SelectField("3e voeux:")
-    fourth = SelectField("4e voeux:")
-    fifth = SelectField("5e voeux:")
+    first = SelectField("1er voeu:")
+    second = SelectField("2e voeu:")
+    third = SelectField("3e voeu:")
+    fourth = SelectField("4e voeu:")
+    fifth = SelectField("5e voeu:")
     submit = SubmitField('Validé')
 
     def validate(self, extra_validators):
@@ -41,3 +41,9 @@ class MakeWish(FlaskForm):
             return False
         
         return True
+
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Proffesseur")], validators=[DataRequired()])
+    submit = SubmitField('Validé')

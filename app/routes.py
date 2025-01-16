@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import *
-from app.forms import LoginForm, JobsCreationForm, MakeWish
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm
 from flask import request
 from app.utils import convertjobsListToDict
 
@@ -47,15 +47,16 @@ def dashboard():
     user:User = current_user
     jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
     if user.rightLevel == 0: # student
+        whishName = None
         wish = db.session.scalar(sa.select(WhishList).where(WhishList.id == user.id))
         
-        whishName = []
-        whishName.append(jobs[wish.first])
-        whishName.append(jobs[wish.second])
-        whishName.append(jobs[wish.third])
-        whishName.append(jobs[wish.fourth])
-        whishName.append(jobs[wish.fifth])
-        print(whishName)
+        if wish is not None:
+            whishName = []
+            whishName.append(jobs[wish.first])
+            whishName.append(jobs[wish.second])
+            whishName.append(jobs[wish.third])
+            whishName.append(jobs[wish.fourth])
+            whishName.append(jobs[wish.fifth])
         return render_template("studentDashboard.html", wish=whishName)
     elif user.rightLevel == 100: # teatcher
         jobsNb = len(jobs)
@@ -121,3 +122,45 @@ def jobselection():
             db.session.commit()
             return redirect(url_for('dashboard'))
         return render_template("jobsSelection.html", form=form)
+
+@app.route("/summary", methods=['GET'])
+@login_required
+def summary():
+    user:User = current_user
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
+        Users = db.session.scalars(sa.select(User).where(User.rightLevel == 0)).all()
+        s = []
+        for u in Users:
+            w = db.session.scalar(sa.select(WhishList).where(WhishList.id == u.id))
+            if w is None:
+                s.append([u.username, "--", "--", "--", "--", "--"])
+            else:
+                local = [u.username]
+                local.append(jobs[w.first])
+                local.append(jobs[w.second])
+                local.append(jobs[w.third])
+                local.append(jobs[w.fourth])
+                local.append(jobs[w.fifth])
+                s.append(local)
+
+        return render_template("summary.html", s=s)
+
+@app.route("/registerUser", methods=['GET', 'POST'])
+@login_required
+def registerUser():
+    user:User = current_user
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        form = RegisterForm()
+        if form.validate_on_submit():
+            u = User(username=form.username.data)
+            u.set_password(form.password.data)
+            u.set_access(form.rightLevel.data)
+            db.session.add(u)
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+        return render_template("registerUser.html", form=form)

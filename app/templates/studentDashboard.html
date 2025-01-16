@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Dashborad</h1>
-{% if wish is defined %}
+<h1>Tableau de bord</h1>
+{% if wish is not none %}
 <div>
     <h2>Liste des voeux dans l'ordre: </h2>
     <ol>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% macro render_field(field) %}
+<div>
+    <label for="{{ field.id }}">{{ field.label.text }}</label>
+    {{ field(class="form-control") }}
+    {% for error in field.errors %}
+        <span class="text-danger">{{ error }}</span>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% block content %}
+
+<h1>Formulaire d'Inscription</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            {{ render_field(form.rightLevel) }}
+
+            <div class="mt-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+
+{% endblock %}
