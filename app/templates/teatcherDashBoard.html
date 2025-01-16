@@ -1,22 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Panneau d'administration professeur</h1>
-<h2>Actions</h2>
-<ul>
-    <li><a href="{{ url_for('jobsCreation') }}">Ajouter un métier</a> </li>
-    <li><a href="{{ url_for('registerUser') }}">Créer un utilisateur manuelement</a> </li>
-    <li><a href="{{ url_for('dashboard') }}">Importer une liste d'élèves (non implémanté) </a> </li>
-    <li><a href="{{ url_for('dashboard') }}">Changer le mot de passe d'un élève (non implémanté) </a> </li>
-    <li> <a href="{{ url_for('dashboard') }}">Changer les voeux d'un élève (non implémanté) </a> </li>
+<div class="container mt-5">
+    <h1 class="mb-4">Panneau d'administration professeur</h1>
 
-</ul>
+    <h2>Actions</h2>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="{{ url_for('jobsCreation') }}" class="btn btn-link">Ajouter un métier</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('registerUser') }}" class="btn btn-link">Créer un utilisateur manuellement</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-link">Importer une liste d'élèves (non implémenté)</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-link">Changer le mot de passe d'un élève (non implémenté)</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-link">Changer les voeux d'un élève (non implémenté)</a>
+        </li>
+    </ul>
 
-<h2>Status</h2>
-Nombres de métier: {{ jobsNb }} <br>
-Nombre d'élève inscrit: {{ nbStudent }} <br>
-Nombre d'élève ayant fait leurs voeux : {{ nbWish }} ( {{ (nbWish*100)//nbStudent }} %) <br>
+    <h2 class="mt-5">Status</h2>
+    <div class="list-group">
+        <div class="list-group-item">
+            <strong>Nombre de métiers :</strong> {{ jobsNb }}
+        </div>
+        <div class="list-group-item">
+            <strong>Nombre d'élèves inscrits :</strong> {{ nbStudent }}
+        </div>
+        <div class="list-group-item">
+            <strong>Nombre d'élèves ayant fait leurs voeux :</strong> {{ nbWish }} ({{ (nbWish*100)//nbStudent }} %)
+        </div>
+    </div>
 
-<a href="{{ url_for('summary') }}">Résumé global</a>
-
+    <div class="mt-4">
+        <a href="{{ url_for('summary') }}" class="btn btn-primary">Résumé global</a>
+    </div>
+</div>
 {% endblock %}

@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Liste des métiers</h1>
-    <ul>
-    {% for job in jobs %}
-        <li>{{ job.Name }}</li>
-    {% endfor %}
-    </ul>
+    <div class="container mt-5">
+        <h1 class="mb-4">Liste des métiers</h1>
+        <ul class="list-group">
+        {% for job in jobs %}
+            <li class="list-group-item">{{ job.Name }}</li>
+        {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

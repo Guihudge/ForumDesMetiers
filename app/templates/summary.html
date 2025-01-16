@@ -1,79 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Résumé des choix</h1>
 
-<style>
-    table {
-        border-collapse: collapse;
-        border: 2px solid rgb(140 140 140);
-        font-family: sans-serif;
-        font-size: 0.8rem;
-        letter-spacing: 1px;
-    }
-
-    caption {
-        caption-side: bottom;
-        padding: 10px;
-        font-weight: bold;
-    }
-
-    thead,
-    tfoot {
-        background-color: rgb(228 240 245);
-    }
-
-    th,
-    td {
-        border: 1px solid rgb(160 160 160);
-        padding: 8px 10px;
-    }
-
-    td:last-of-type {
-        text-align: center;
-    }
-
-    tbody>tr:nth-of-type(even) {
-        background-color: rgb(237 238 242);
-    }
-
-    tfoot th {
-        text-align: right;
-    }
-
-    tfoot td {
-        font-weight: bold;
-    }
-</style>
-
-<h1>Résumé des choix</h1>
-{% if s is defined %}
-<table>
-    <thead>
-        <tr>
-            <th scope="col">Élève</th>
-            <th scope="col">Voeux 1</th>
-            <th scope="col">Voeux 2</th>
-            <th scope="col">Voeux 3</th>
-            <th scope="col">Voeux 4</th>
-            <th scope="col">Voeux 5</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for l in s %}
-        <tr>
-            <td>{{ l[0] }}</td>
-            <td>{{ l[1] }}</td>
-            <td>{{ l[2] }}</td>
-            <td>{{ l[3] }}</td>
-            <td>{{ l[4] }}</td>
-            <td>{{ l[5] }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-Une érreure c'est produite
-
-{% endif %}
-
+    {% if s is defined %}
+    <table class="table table-bordered table-striped">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Élève</th>
+                <th scope="col">Voeux 1</th>
+                <th scope="col">Voeux 2</th>
+                <th scope="col">Voeux 3</th>
+                <th scope="col">Voeux 4</th>
+                <th scope="col">Voeux 5</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in s %}
+            <tr>
+                <td>{{ l[0] }}</td>
+                <td>{{ l[1] }}</td>
+                <td>{{ l[2] }}</td>
+                <td>{{ l[3] }}</td>
+                <td>{{ l[4] }}</td>
+                <td>{{ l[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-danger">
+        Une erreur s'est produite.
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

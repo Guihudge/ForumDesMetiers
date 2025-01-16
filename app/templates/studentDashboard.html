@@ -1,22 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Tableau de bord</h1>
-{% if wish is not none %}
-<div>
-    <h2>Liste des voeux dans l'ordre: </h2>
-    <ol>
-        {% for w in wish %}
-        <li>{{ w }}</li>
-        {% endfor %}
-    </ol>
-</div>
-<a href="{{ url_for('jobselection') }}">Changer les voeux</a>
-{% else %}
+<div class="container mt-5">
+    <h1 class="mb-4">Tableau de bord</h1>
 
-<div>
-    <a href="{{ url_for('jobselection') }}">Veuillez enregistrer vos voeux!</a>
+    {% if wish is not none %}
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">Liste des voeux dans l'ordre :</h2>
+            <ol class="list-group list-group-numbered">
+                {% for w in wish %}
+                <li class="list-group-item">{{ w }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a href="{{ url_for('jobselection') }}" class="btn btn-primary">Changer les voeux</a>
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Veuillez enregistrer vos voeux !
+    </div>
+    <a href="{{ url_for('jobselection') }}" class="btn btn-primary">Enregistrer vos voeux</a>
+    {% endif %}
 </div>
-{% endif %}
-
 {% endblock %}
