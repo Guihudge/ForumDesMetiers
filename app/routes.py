@@ -6,7 +6,7 @@ from app import db
 from app.models import *
 from app.forms import LoginForm, JobsCreationForm, MakeWish
 from flask import request
-from urllib.parse import urlsplit
+from app.utils import convertjobsListToDict
 
 @app.route('/')
 @app.route('/index')
@@ -45,10 +45,23 @@ def logout():
 @login_required
 def dashboard():
     user:User = current_user
+    jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
     if user.rightLevel == 0: # student
-        return "Student need to choose jobs"
+        wish = db.session.scalar(sa.select(WhishList).where(WhishList.id == user.id))
+        
+        whishName = []
+        whishName.append(jobs[wish.first])
+        whishName.append(jobs[wish.second])
+        whishName.append(jobs[wish.third])
+        whishName.append(jobs[wish.fourth])
+        whishName.append(jobs[wish.fifth])
+        print(whishName)
+        return render_template("studentDashboard.html", wish=whishName)
     elif user.rightLevel == 100: # teatcher
-        return "Teatcher panel! \n - Jobs creation\n- Students creation\n-close jobs selection"
+        jobsNb = len(jobs)
+        nbStudent = len(db.session.scalars(sa.select(User).where(User.rightLevel == 0)).all())
+        nbWish = len(db.session.scalars(sa.select(WhishList)).all())
+        return render_template("teatcherDashBoard.html", jobsNb = jobsNb,  nbStudent = nbStudent, nbWish = nbWish)
     else:
         app.logger.critical(f"User {user.username} get a non correct access level ({user.rightLevel})!")
         logout_user()
@@ -57,6 +70,7 @@ def dashboard():
 @app.route("/jobsCreation", methods=['GET', 'POST'])
 @login_required
 def jobsCreation():
+    global jobsList
     user:User = current_user
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
@@ -66,12 +80,13 @@ def jobsCreation():
             job = Jobs(Name=form.jobsName.data)
             db.session.add(job)
             db.session.commit()
+            jobsList = db.session.scalars(sa.select(Jobs)).all()
             return redirect(url_for('jobsCreation'))
         return render_template("jobsCreate.html", form=form)
 
 @app.route("/jobs")
 @login_required
-def jobsList():
+def jobs():
     jobs = db.session.scalars(sa.select(Jobs)).all()
     return render_template("jobsList.html", jobs=jobs)
 
@@ -92,9 +107,17 @@ def jobselection():
         form.fourth.choices = jobsList
         form.fifth.choices = jobsList
         if form.validate_on_submit():
-            print(form.first.data)
-            w = WhishList(id=user.id, first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
-            db.session.add(w)
+            w = db.session.scalar(sa.select(WhishList).where(WhishList.id == user.id))
+            if w is not None:
+                db.session.execute(
+                    sa.update(WhishList)
+                        .where(WhishList.id == user.id)
+                        .values(first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
+                )
+            else:
+                w = WhishList(id=user.id, first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
+                db.session.add(w)
+            
             db.session.commit()
             return redirect(url_for('dashboard'))
         return render_template("jobsSelection.html", form=form)

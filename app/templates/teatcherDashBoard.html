@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Panneau d'administration professeur</h1>
+<h2>Actions</h2>
+<ul>
+    <li><a href="{{ url_for('jobsCreation') }}">Ajouter un métier</a> </li>
+    <li><a href="{{ url_for('dashboard') }}">Créer un utilisateur manuelement (non implémanté) </a> </li>
+    <li><a href="{{ url_for('dashboard') }}">Importer une liste d'élèves (non implémanté) </a> </li>
+    <li><a href="{{ url_for('dashboard') }}">Changer le mot de passe d'un élève (non implémanté) </a> </li>
+    <li> <a href="{{ url_for('dashboard') }}">Changer les voeux d'un élève (non implémanté) </a> </li>
+
+</ul>
+
+<h2>Status</h2>
+Nombres de métier: {{ jobsNb }} <br>
+Nombre d'élève inscrit: {{ nbStudent }} <br>
+Nombre d'élève ayant fait leurs voeux : {{ nbWish }} ( {{ (nbWish*100)//nbStudent }} %) <br>
+
+{% endblock %}

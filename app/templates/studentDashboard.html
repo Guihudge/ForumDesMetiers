@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dashborad</h1>
+{% if wish is defined %}
+<div>
+    <h2>Liste des voeux dans l'ordre: </h2>
+    <ol>
+        {% for w in wish %}
+        <li>{{ w }}</li>
+        {% endfor %}
+    </ol>
+</div>
+<a href="{{ url_for('jobselection') }}">Changer les voeux</a>
+{% else %}
+
+<div>
+    <a href="{{ url_for('jobselection') }}">Veuillez enregistrer vos voeux!</a>
+</div>
+{% endif %}
+
+{% endblock %}
