@@ -6,10 +6,10 @@ import sqlalchemy as sa
 from app.models import Jobs
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Sign In')
+    username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
+    password = PasswordField('Mot de passe (jjmmaaaa)', validators=[DataRequired()])
+    remember_me = BooleanField('Ce souvenir de moi')
+    submit = SubmitField('Connexion')
 
 class JobsCreationForm(FlaskForm):
     jobsName = StringField("Nom du métier", validators=[DataRequired()])
@@ -52,5 +52,4 @@ class RegisterForm(FlaskForm):
 
 class BatchRegister(FlaskForm):
     file = FileField("Lsite au format csv.", validators=[DataRequired()])
-    classe = StringField('Classe', validators=[DataRequired()])
     submit = SubmitField('Envoyé')

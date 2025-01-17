@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, send_file
 from app import app
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
@@ -6,8 +6,9 @@ from app import db
 from app.models import *
 from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister
 from flask import request
-from app.utils import convertjobsListToDict
+from app.utils import convertjobsListToDict, generateLoginPDF
 import csv
+import datetime
 
 UPLOAD_PATH="./upload/"
 
@@ -15,7 +16,7 @@ UPLOAD_PATH="./upload/"
 @app.route('/index')
 @login_required
 def index():
-    return "Hello, World!"
+    return redirect(url_for('login'))
 
 @app.route("/me")
 @login_required
@@ -60,12 +61,12 @@ def dashboard():
             whishName.append(jobs[wish.third])
             whishName.append(jobs[wish.fourth])
             whishName.append(jobs[wish.fifth])
-        return render_template("studentDashboard.html", wish=whishName)
+        return render_template("studentDashboard.html", wish=whishName, user=user)
     elif user.rightLevel == 100: # teatcher
         jobsNb = len(jobs)
         nbStudent = len(db.session.scalars(sa.select(User).where(User.rightLevel == 0)).all())
         nbWish = len(db.session.scalars(sa.select(WhishList)).all())
-        return render_template("teatcherDashBoard.html", jobsNb = jobsNb,  nbStudent = nbStudent, nbWish = nbWish)
+        return render_template("teatcherDashBoard.html", jobsNb = jobsNb,  nbStudent = nbStudent, nbWish = nbWish, user=user)
     else:
         app.logger.critical(f"User {user.username} get a non correct access level ({user.rightLevel})!")
         logout_user()
@@ -86,13 +87,13 @@ def jobsCreation():
             db.session.commit()
             jobsList = db.session.scalars(sa.select(Jobs)).all()
             return redirect(url_for('jobsCreation'))
-        return render_template("jobsCreate.html", form=form)
+        return render_template("jobsCreate.html", form=form, user=user)
 
 @app.route("/jobs")
 @login_required
 def jobs():
     jobs = db.session.scalars(sa.select(Jobs)).all()
-    return render_template("jobsList.html", jobs=jobs)
+    return render_template("jobsList.html", jobs=jobs, user=user)
 
 @app.route("/jobselection", methods=['GET', 'POST'])
 @login_required
@@ -124,7 +125,7 @@ def jobselection():
             
             db.session.commit()
             return redirect(url_for('dashboard'))
-        return render_template("jobsSelection.html", form=form)
+        return render_template("jobsSelection.html", form=form, user=user)
 
 @app.route("/summary", methods=['GET'])
 @login_required
@@ -150,7 +151,7 @@ def summary():
                 local.append(jobs[w.fifth])
                 s.append(local)
 
-        return render_template("summary.html", s=s)
+        return render_template("summary.html", s=s, user=user)
 
 @app.route("/registerUser", methods=['GET', 'POST'])
 @login_required
@@ -167,7 +168,7 @@ def registerUser():
             db.session.add(u)
             db.session.commit()
             return redirect(url_for('dashboard'))
-        return render_template("registerUser.html", form=form)
+        return render_template("registerUser.html", form=form, user=user)
     
 @app.route("/batchRegister", methods=['GET','POST'])
 @login_required
@@ -180,20 +181,30 @@ def batchRegister():
         if form.validate_on_submit():
             file = request.files[form.file.name]
             file.save(UPLOAD_PATH + "tmp.csv")
-            csvfile = open(UPLOAD_PATH + "tmp.csv")
+            csvfile = open(UPLOAD_PATH + "tmp.csv", encoding="ISO-8859-1")
             spamreader = csv.reader(csvfile, delimiter=';', quotechar='"')
+            userdata = {}
             for row in spamreader:
-                if row[0] != '\ufeff':
-                    low = row[0].lower()
-                    lowSplit = low.split(" ")
-                    login = lowSplit[-1][0]+lowSplit[0]
+                if row[0] != "Nom de famille":
+                    nom = row[0].lower().replace("-", " ").split(" ")
+                    prenom = row[1].lower().replace(" ", "-").split("-")
+                    login = prenom[0][0] + nom[0]
                     pwd = row[2].replace("/","")
+                    classe = row[3].replace("=", "").replace('"', '')
                     
-                    u = User(username=login, displayName=row[0], classe=form.classe.data)
+                    u = User(username=login, displayName=(row[0] + " " + row[1]), classe=classe)
                     u.set_access(0)
                     u.set_password(pwd)
-                    db.session.add(u)
-            db.session.commit()
 
+                    if classe in userdata:
+                        userdata[classe].append((row[0], row[1], login, pwd)) #format: Nom, Prénom, login, password
+                    else:
+                        userdata[classe] = [(row[0], row[1], login, pwd)]
+                    # db.session.add(u)
+            # db.session.commit()
+            
+            
+            generateLoginPDF(userdata, [("Nom", "Prénom", "Login", "Mot de passe")], "./static/", "Logins.pdf")
 
-        return render_template("batch_register.html", form=form)
+            return send_file("../static/Logins.pdf")
+        return render_template("batch_register.html", form=form, user=user)
