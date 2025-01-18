@@ -92,6 +92,7 @@ def jobsCreation():
 @app.route("/jobs")
 @login_required
 def jobs():
+    user:User = current_user
     jobs = db.session.scalars(sa.select(Jobs)).all()
     return render_template("jobsList.html", jobs=jobs, user=user)
 
@@ -204,7 +205,7 @@ def batchRegister():
             # db.session.commit()
             
             
-            generateLoginPDF(userdata, [("Nom", "Prénom", "Login", "Mot de passe")], "./static/", "Logins.pdf")
+            generateLoginPDF(userdata, [("Nom", "Prénom", "Login", "Mot de passe")], "./static/", "Logins.pdf", request.url_root)
 
             return send_file("../static/Logins.pdf")
         return render_template("batch_register.html", form=form, user=user)
