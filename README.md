@@ -3,9 +3,13 @@
 Application de répartition pour le forum des métiers
 
 ## Fonctionnalités manquantes
-- Algo de répartition
+
+### V1 milestone
 - Édition du résumé par classe
 - blocage du choix des veux
+
+### V2 milestone
+- Algo de répartition
 
 ## Fonctionnalités présentes
 - Création d'élève

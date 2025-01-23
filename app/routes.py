@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import *
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSummary
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF
 import csv
@@ -207,11 +207,41 @@ def batchRegister():
                         userdata[classe].append((row[0], row[1], login, pwd)) #format: Nom, Prénom, login, password
                     else:
                         userdata[classe] = [(row[0], row[1], login, pwd)]
-                    # db.session.add(u)
-            # db.session.commit()
+                    db.session.add(u)
+            db.session.commit()
             
             
             generateLoginPDF(userdata, [("Nom", "Prénom", "Login", "Mot de passe")], "./static/", "Logins.pdf", request.url_root)
 
             return send_file("../static/Logins.pdf")
         return render_template("batch_register.html", form=form, user=user)
+    
+@app.route("/classeSummary", methods=['GET','POST'])
+@login_required
+def classeSummary():
+    user:User = current_user
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        form = SectionSummary()
+        form.section.choices = list(set(db.session.scalars(sa.select(User.classe).where(User.rightLevel == 0)).all()))
+        if form.validate_on_submit():
+            jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
+            Users = db.session.scalars(sa.select(User).where(User.rightLevel == 0).where(User.classe == form.section.data)).all()
+            s = []
+            for u in Users:
+                w = db.session.scalar(sa.select(WhishList).where(WhishList.id == u.id))
+                if w is None:
+                    s.append([u.displayName if u.displayName is not None else u.username, u.classe,"--", "--", "--", "--", "--"])
+                else:
+                
+                    local = [u.displayName if u.displayName is not None else u.username , u.classe]
+                    local.append(jobs[w.first])
+                    local.append(jobs[w.second])
+                    local.append(jobs[w.third])
+                    local.append(jobs[w.fourth])
+                    local.append(jobs[w.fifth])
+                    s.append(local)
+            return render_template("summary.html", s=s, user=user)
+
+        return render_template("section_summary.html", form=form, user=user)
