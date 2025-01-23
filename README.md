@@ -54,7 +54,7 @@ Lancement de l'application :
 $ waitress-serve app:app
 ```
 
-# Via docker
+### Via docker
 
 Construction de l'image docker :
 ```
@@ -71,3 +71,6 @@ Lancement de l'image :
 $ docker run -p "out_port":8080 -e "secret-precedant" forum-metier
 ```
 Pensez à changer le port et le secret.
+
+### Commun pour toutes les méthodes
+Lors du premier démarrage de l'application les identifiants administrateur sont affichés dans la sortie standard. Ensuite accéder à l'application et se connecter avec les identifiants précédents.
