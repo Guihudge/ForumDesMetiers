@@ -190,3 +190,5 @@ pip-selfcheck.json
 test*.csv
 *.db
 *.pdf
+*.DS_Store
+upload/

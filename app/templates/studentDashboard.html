@@ -15,14 +15,22 @@
             </ol>
         </div>
     </div>
+    {% if OpenWhish %}
     <div class="mt-3">
-        <a href="{{ url_for('jobselection') }}" class="btn btn-primary">Changer les voeux</a>
+        <a href="{{ url_for('jobselection') }}" class="btn btn-primary">Changer les vœux</a>
     </div>
+    {% endif %}
     {% else %}
+    {% if OpenWhish %}
     <div class="alert alert-warning" role="alert">
-        Veuillez enregistrer vos voeux !
+        Veuillez enregistrer vos vœux !
     </div>
-    <a href="{{ url_for('jobselection') }}" class="btn btn-primary">Enregistrer vos voeux</a>
+    <a href="{{ url_for('jobselection') }}" class="btn btn-primary">Enregistrer vos vœux</a>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        Les vœux sont clos. Si vous voyez ce message veuillez prévenir votre professeur principal ou un professeur en charge du forum des métiers.
+    </div>
+    {% endif %}
     {% endif %}
 </div>
 {% endblock %}

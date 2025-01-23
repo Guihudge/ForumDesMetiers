@@ -35,6 +35,15 @@
         <div class="list-group-item">
             <strong>Nombre d'élèves ayant fait leurs voeux :</strong> {{ nbWish }} ({{ (nbWish*100)//nbStudent }} %)
         </div>
+        {% if WhishOpen %}
+        <div class="list-group-item">
+            <strong>Voeux :</strong> Ouvert
+        </div>
+        {% else %}
+        <div class="list-group-item">
+            <strong>Voeux :</strong> Fermé
+        </div>
+        {% endif %}
     </div>
     {% else %}
     <div class="list-group">
@@ -44,6 +53,7 @@
     <div class="mt-4">
         <a href="{{ url_for('summary') }}" class="btn btn-primary">Résumé global</a>
         <a href="{{ url_for('classeSummary') }}" class="btn btn-primary">Résumé par classe</a>
+        <a href="{{ url_for('switchWishStatus') }}" class="btn btn-danger">Ouvrir / Fermer les voeux</a>
     </div>
 </div>
 {% endblock %}

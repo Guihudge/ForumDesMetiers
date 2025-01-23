@@ -5,7 +5,7 @@ Application de répartition pour le forum des métiers
 ## Fonctionnalités manquantes
 
 ### V1 milestone
-- blocage du choix des veux
+- Done !
 
 ### V2 milestone
 - Algo de répartition
@@ -17,6 +17,7 @@ Application de répartition pour le forum des métiers
 - Résumé globale
 - Édition du résumé par classe
 - Statistique de base
+- blocage du choix des veux
 
 ## Installation
 

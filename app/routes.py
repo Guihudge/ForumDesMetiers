@@ -7,6 +7,7 @@ from app.models import *
 from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSummary
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF
+from app.config import Config
 import csv
 import datetime
 
@@ -63,12 +64,12 @@ def dashboard():
             whishName.append(jobs[wish.third])
             whishName.append(jobs[wish.fourth])
             whishName.append(jobs[wish.fifth])
-        return render_template("studentDashboard.html", wish=whishName, user=user)
+        return render_template("studentDashboard.html", wish=whishName, user=user, OpenWhish=Config.Open_Whish)
     elif user.rightLevel == 100: # teatcher
         jobsNb = len(jobs)
         nbStudent = len(db.session.scalars(sa.select(User).where(User.rightLevel == 0)).all())
         nbWish = len(db.session.scalars(sa.select(WhishList)).all())
-        return render_template("teatcherDashBoard.html", jobsNb = jobsNb,  nbStudent = nbStudent, nbWish = nbWish, user=user)
+        return render_template("teatcherDashBoard.html", jobsNb = jobsNb,  nbStudent = nbStudent, nbWish = nbWish, user=user, WhishOpen=Config.Open_Whish)
     else:
         app.logger.critical(f"User {user.username} get a non correct access level ({user.rightLevel})!")
         logout_user()
@@ -107,30 +108,33 @@ def jobselection():
     if user.rightLevel != 0:
         return redirect(url_for('dashboard'))
     else:
-        # Jobs selection
-        jobs = db.session.scalars(sa.select(Jobs)).all()
-        form = MakeWish()
-        jobsList = [(i.id, i.Name) for i in jobs]
-        form.first.choices = jobsList
-        form.second.choices = jobsList
-        form.third.choices = jobsList
-        form.fourth.choices = jobsList
-        form.fifth.choices = jobsList
-        if form.validate_on_submit():
-            w = db.session.scalar(sa.select(WhishList).where(WhishList.id == user.id))
-            if w is not None:
-                db.session.execute(
-                    sa.update(WhishList)
-                        .where(WhishList.id == user.id)
-                        .values(first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
-                )
-            else:
-                w = WhishList(id=user.id, first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
-                db.session.add(w)
-            
-            db.session.commit()
+        if Config.Open_Whish:
+            # Jobs selection
+            jobs = db.session.scalars(sa.select(Jobs)).all()
+            form = MakeWish()
+            jobsList = [(i.id, i.Name) for i in jobs]
+            form.first.choices = jobsList
+            form.second.choices = jobsList
+            form.third.choices = jobsList
+            form.fourth.choices = jobsList
+            form.fifth.choices = jobsList
+            if form.validate_on_submit():
+                w = db.session.scalar(sa.select(WhishList).where(WhishList.id == user.id))
+                if w is not None:
+                    db.session.execute(
+                        sa.update(WhishList)
+                            .where(WhishList.id == user.id)
+                            .values(first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
+                    )
+                else:
+                    w = WhishList(id=user.id, first=form.first.data, second=form.second.data, third=form.third.data, fourth=form.fourth.data, fifth=form.fifth.data)
+                    db.session.add(w)
+                
+                db.session.commit()
+                return redirect(url_for('dashboard'))
+            return render_template("jobsSelection.html", form=form, user=user)
+        else:
             return redirect(url_for('dashboard'))
-        return render_template("jobsSelection.html", form=form, user=user)
 
 # Teatcher page to get global summury on all users
 @app.route("/summary", methods=['GET'])
@@ -252,3 +256,13 @@ def classeSummary():
             return render_template("summary.html", s=s, user=user)
 
         return render_template("section_summary.html", form=form, user=user)
+    
+@app.route("/switchWishStatus", methods=['GET'])
+@login_required
+def switchWishStatus():
+    user:User = current_user
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        Config.Open_Whish = not Config.Open_Whish
+        return redirect(url_for('dashboard'))
