@@ -25,14 +25,14 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-    def set_access(self, level:int):
+    def set_access(self, level:int): # 0: student, 100: teatcher
         self.rightLevel = level
 
 class Jobs(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     Name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
 
-class TimeSlot(db.Model):
+class TimeSlot(db.Model): # Not used
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     StartTime: so.Mapped[datetime] = so.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc))
@@ -47,7 +47,7 @@ class WhishList(db.Model):
     fourth: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Jobs.id))
     fifth: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Jobs.id))
 
-class Student(db.Model):
+class Student(db.Model): # Not used
     id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), primary_key=True)
     timeSlot: so.Mapped[int] = so.mapped_column(sa.ForeignKey(TimeSlot.id))
     whish: so.Mapped[int] = so.mapped_column(sa.ForeignKey(WhishList.id))

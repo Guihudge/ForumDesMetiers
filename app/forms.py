@@ -32,16 +32,16 @@ class MakeWish(FlaskForm):
         if not super().validate():
             return False
 
-        # Récupérer les valeurs des champs
+        # Check if all wish is different
         wishes = [self.first.data, self.second.data, self.third.data, self.fourth.data, self.fifth.data]
 
-        # Vérifier les doublons
         if len(wishes) != len(set(wishes)):
             self.first.errors.append("Les vœux doivent être différents.")
             return False
         
         return True
 
+# Account creation, student and teatcher
 class RegisterForm(FlaskForm):
     displayName = StringField('Nom prénom', validators=[DataRequired()])
     username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
@@ -50,6 +50,7 @@ class RegisterForm(FlaskForm):
     rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Proffesseur")], validators=[DataRequired()])
     submit = SubmitField('Validé')
 
+# Batch student register
 class BatchRegister(FlaskForm):
     file = FileField("Lsite au format csv.", validators=[DataRequired()])
     submit = SubmitField('Envoyé')

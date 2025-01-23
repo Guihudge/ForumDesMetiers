@@ -1,6 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+# Message for student id and pass. (Note: use html formating)
 STUDENT_MESSAGE = """
 Élève : {student} ({section})<br>
 Le mercredi 12 mars, tu vas participer pendant 1h au forum des métiers du collège.<br>
@@ -11,9 +12,10 @@ Identifiant: \t<b>{login}</b><br>
 Mot de passe: \t<b>{pwd}</b><br>
 """
 
+#App config
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess' #TODO: CHANGE IT FOR PROD!
     UPLOAD_PATH="./upload/"
     

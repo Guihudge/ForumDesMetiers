@@ -12,18 +12,20 @@ import datetime
 
 UPLOAD_PATH="./upload/"
 
+# Main app page, default redirect to login
 @app.route('/')
 @app.route('/index')
-@login_required
 def index():
     return redirect(url_for('login'))
 
+#Check if user is loged and get his username
 @app.route("/me")
 @login_required
 def me():
     locUser:User = current_user
     return f"Hi, {locUser.username}"
 
+# Log an user
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -89,6 +91,7 @@ def jobsCreation():
             return redirect(url_for('jobsCreation'))
         return render_template("jobsCreate.html", form=form, user=user)
 
+# Display all jobs (add jobs desc?)
 @app.route("/jobs")
 @login_required
 def jobs():
@@ -96,6 +99,7 @@ def jobs():
     jobs = db.session.scalars(sa.select(Jobs)).all()
     return render_template("jobsList.html", jobs=jobs, user=user)
 
+# Page where student make choice
 @app.route("/jobselection", methods=['GET', 'POST'])
 @login_required
 def jobselection():
@@ -128,6 +132,7 @@ def jobselection():
             return redirect(url_for('dashboard'))
         return render_template("jobsSelection.html", form=form, user=user)
 
+# Teatcher page to get global summury on all users
 @app.route("/summary", methods=['GET'])
 @login_required
 def summary():
@@ -171,6 +176,7 @@ def registerUser():
             return redirect(url_for('dashboard'))
         return render_template("registerUser.html", form=form, user=user)
     
+# Batch register using generated list from pronote
 @app.route("/batchRegister", methods=['GET','POST'])
 @login_required
 def batchRegister():
