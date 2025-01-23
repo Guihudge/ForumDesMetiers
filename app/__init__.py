@@ -25,13 +25,22 @@ with app.app_context():
             print("New db, initialize...")
             password_length = 13
             password = secrets.token_urlsafe(password_length)
-            u = models.User(username="admin", displayName="Administrator", classe="")
+            u = models.User(username="admin", displayName="Administrateur", classe="")
             u.set_password(password)
             u.set_access(100)
             print(f"Username: admin\tpassword: {password}")
             db.session.add(u)
             db.session.commit()
     except:
-        print("Whoa, first database query failed...")
-        print("Try reinit db")
+        print("INIT db")
         db.create_all()
+        print("New db, initialize...")
+        password_length = 13
+        password = secrets.token_urlsafe(password_length)
+        u = models.User(username="admin", displayName="Administrateur", classe="")
+        u.set_password(password)
+        u.set_access(100)
+        print(f"ADMIN PASS, Only display once: Username: admin\tpassword: {password}")
+        db.session.add(u)
+        db.session.commit()
+
