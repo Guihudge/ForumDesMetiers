@@ -63,7 +63,7 @@ $ docker build --tag forum-metier .
 
 Génération du secret :
 ```
-$ python -c 'import secrets; print("export SECRET_KEY="+secrets.token_hex())'
+$ python -c 'import secrets; print("SECRET_KEY="+secrets.token_hex())'
 ```
 
 Lancement de l'image :
