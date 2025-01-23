@@ -5,7 +5,6 @@ Application de répartition pour le forum des métiers
 ## Fonctionnalités manquantes
 
 ### V1 milestone
-- Édition du résumé par classe
 - blocage du choix des veux
 
 ### V2 milestone
@@ -16,6 +15,7 @@ Application de répartition pour le forum des métiers
 - création des métiers
 - importation d'élève depuis Pronote
 - Résumé globale
+- Édition du résumé par classe
 - Statistique de base
 
 ## Installation

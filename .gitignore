@@ -189,3 +189,4 @@ pip-selfcheck.json
 
 test*.csv
 *.db
+*.pdf

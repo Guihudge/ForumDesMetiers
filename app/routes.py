@@ -190,6 +190,7 @@ def batchRegister():
             file.save(UPLOAD_PATH + "tmp.csv")
             csvfile = open(UPLOAD_PATH + "tmp.csv", encoding="ISO-8859-1")
             spamreader = csv.reader(csvfile, delimiter=';', quotechar='"')
+            loginlist = []
             userdata = {}
             for row in spamreader:
                 if row[0] != "Nom de famille":
@@ -198,6 +199,11 @@ def batchRegister():
                     login = prenom[0][0] + nom[0]
                     pwd = row[2].replace("/","")
                     classe = row[3].replace("=", "").replace('"', '')
+                    idx = 2
+
+                    while login in loginlist:
+                        login += str(idx)
+                        idx += 1
                     
                     u = User(username=login, displayName=(row[0] + " " + row[1]), classe=classe)
                     u.set_access(0)
@@ -208,6 +214,7 @@ def batchRegister():
                     else:
                         userdata[classe] = [(row[0], row[1], login, pwd)]
                     db.session.add(u)
+                    loginlist.append(login)
             db.session.commit()
             
             
@@ -224,7 +231,7 @@ def classeSummary():
         return redirect(url_for('dashboard'))
     else:
         form = SectionSummary()
-        form.section.choices = list(set(db.session.scalars(sa.select(User.classe).where(User.rightLevel == 0)).all()))
+        form.section.choices = sorted(list(set(db.session.scalars(sa.select(User.classe).where(User.rightLevel == 0)).all())))
         if form.validate_on_submit():
             jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
             Users = db.session.scalars(sa.select(User).where(User.rightLevel == 0).where(User.classe == form.section.data)).all()
