@@ -53,7 +53,7 @@ $ python -c 'import secrets; print("SECRET_KEY="+secrets.token_hex())'
 Lancement de l'image :
 ```sh
 $ touch ./app.db # adapter le chemain en fonction de l'emplaement du fichier de base de données
-$ docker run -p "out_port":8080 -e "secret-precedant" -v ./app.db:/ForumMetier/app/app.db forum-metier
+$ docker run -p "out_port":8080 -t -e "secret-precedant" -v ./app.db:/ForumMetier/app/app.db forum-metier
 ```
 Pensez à changer le port et le secret.
 
