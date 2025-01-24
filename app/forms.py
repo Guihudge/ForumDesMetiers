@@ -21,12 +21,12 @@ class JobsCreationForm(FlaskForm):
             raise ValidationError("Métier déjà crée")
 
 class MakeWish(FlaskForm):
-    first = SelectField("1er voeu:")
-    second = SelectField("2e voeu:")
-    third = SelectField("3e voeu:")
-    fourth = SelectField("4e voeu:")
-    fifth = SelectField("5e voeu:")
-    submit = SubmitField('Validé')
+    first = SelectField("1er vœux:")
+    second = SelectField("2e vœux:")
+    third = SelectField("3e vœux:")
+    fourth = SelectField("4e vœux:")
+    fifth = SelectField("5e vœux:")
+    submit = SubmitField('Valider')
 
     def validate(self, extra_validators):
         if not super().validate():
@@ -48,13 +48,13 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     classe = StringField('Classe', validators=[DataRequired()])
     rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Proffesseur")], validators=[DataRequired()])
-    submit = SubmitField('Validé')
+    submit = SubmitField('Valider')
 
 # Batch student register
 class BatchRegister(FlaskForm):
     file = FileField("Lsite au format csv.", validators=[DataRequired()])
-    submit = SubmitField('Envoyé')
+    submit = SubmitField('Envoyer')
 
 class SectionSummary(FlaskForm):
     section = SelectField("Classe")
-    submit = SubmitField("Validé")
+    submit = SubmitField("Valider")
