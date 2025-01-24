@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField
-from wtforms.validators import DataRequired, ValidationError, regexp
+from wtforms.validators import DataRequired, ValidationError, regexp, Length
 from app import db
 import sqlalchemy as sa
 from app.models import Jobs
@@ -13,6 +13,7 @@ class LoginForm(FlaskForm):
 
 class JobsCreationForm(FlaskForm):
     jobsName = StringField("Nom du métier", validators=[DataRequired()])
+    description = StringField("Description", validators=[Length(max=512)])
     submit = SubmitField('Ajouter le metier')
 
     def validate_jobsName(self, jobs):

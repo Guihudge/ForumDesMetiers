@@ -85,10 +85,9 @@ def jobsCreation():
     else:
         form = JobsCreationForm()
         if form.validate_on_submit():
-            job = Jobs(Name=form.jobsName.data)
+            job = Jobs(Name=form.jobsName.data, description=form.description.data)
             db.session.add(job)
             db.session.commit()
-            jobsList = db.session.scalars(sa.select(Jobs)).all()
             return redirect(url_for('jobsCreation'))
         return render_template("jobsCreate.html", form=form, user=user)
 

@@ -5,7 +5,7 @@
         <h1 class="mb-4">Liste des métiers</h1>
         <ul class="list-group">
         {% for job in jobs %}
-            <li class="list-group-item">{{ job.Name }}</li>
+            <li class="list-group-item">{{ job.Name }} : {{ job.description }}</li>
         {% endfor %}
         </ul>
     </div>

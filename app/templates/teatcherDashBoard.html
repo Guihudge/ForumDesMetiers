@@ -45,15 +45,16 @@
         </div>
         {% endif %}
     </div>
-    {% else %}
-    <div class="list-group">
-        Auccun élève enregistré
-    </div>
-    {% endif %}
     <div class="mt-4">
         <a href="{{ url_for('summary') }}" class="btn btn-primary">Résumé global</a>
         <a href="{{ url_for('classeSummary') }}" class="btn btn-primary">Résumé par classe</a>
         <a href="{{ url_for('switchWishStatus') }}" class="btn btn-danger">Ouvrir / Fermer les voeux</a>
     </div>
+    {% else %}
+    <div class="list-group">
+        Auccun élève enregistré
+    </div>
+    {% endif %}
+    
 </div>
 {% endblock %}

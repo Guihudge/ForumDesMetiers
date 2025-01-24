@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
 class Jobs(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     Name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(512))
 
 class TimeSlot(db.Model): # Not used
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
