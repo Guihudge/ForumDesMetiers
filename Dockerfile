@@ -16,8 +16,8 @@ RUN pip3 install --break-system-packages waitress
 
 # Copy app
 COPY --chown=root:root --exclude=app/app.db --exclude=*/__pycache__ --exclude=.venv/ --exclude=migrations/ . /ForumMetier/
-RUN mkdir /ForumMetier/upload
-RUN mkdir /ForumMetier/static
+RUN mkdir -p /ForumMetier/upload
+RUN mkdir -p /ForumMetier/static
 
 # Go to app dir
 WORKDIR /ForumMetier
