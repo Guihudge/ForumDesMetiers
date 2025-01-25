@@ -62,9 +62,9 @@ class SectionSummary(FlaskForm):
 
 class RepartForm(FlaskForm):
     # Bad -> hard coded
-    slot1 = SelectMultipleField("9h-10h")
-    slot2 = SelectMultipleField("10h-11h")
-    slot3 = SelectMultipleField("11h-12h")
+    slot1 = SelectMultipleField("Créneau 1")
+    slot2 = SelectMultipleField("Créneau 2")
+    slot3 = SelectMultipleField("Créneau 3")
     submit = SubmitField("Valider")
 
     def validate(self, extra_validators):

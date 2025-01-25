@@ -301,8 +301,6 @@ def repart():
 
             generateRepartitionPDF(repartitionSlot1, repartitionSlot2, repartitionSlot3)
 
-
-
-            return redirect(url_for('dashboard'))
+            return send_file("../static/repart.pdf")
 
         return render_template("repart.html", user=user, form=form)
