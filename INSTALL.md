@@ -38,9 +38,11 @@ Lancement de l'application :
 $ waitress-serve app:app
 ```
 
+Vérifier le fonctionnement de l'app en allant sur un des lien suivant: http://localhost:8080 ou http://127.0.0.1:8080
+
 ## Via docker
 
-Construction de l'image docker :
+Construction de l'image docker (**Attention au . à la fin de la commande il n'est pas optionel**):
 ```sh
 $ docker build --tag forum-metier .
 ```

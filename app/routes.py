@@ -4,12 +4,12 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import *
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSummary
+from app.forms import *
 from flask import request
-from app.utils import convertjobsListToDict, generateLoginPDF
-from app.config import Config
+from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
+from app.config import Config, TIMES_SLOT
 import csv
-import datetime
+from app.repartition import Repartition
 
 UPLOAD_PATH="./upload/"
 
@@ -265,3 +265,44 @@ def switchWishStatus():
     else:
         Config.Open_Whish = not Config.Open_Whish
         return redirect(url_for('dashboard'))
+    
+@app.route("/repart", methods=['GET','POST'])
+@login_required
+def repart():
+    user:User = current_user
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        sections = sorted(list(set(db.session.scalars(sa.select(User.classe).where(User.rightLevel == 0)).all())))
+        form = RepartForm()
+        form.slot1.choices = sections
+        form.slot2.choices = sections
+        form.slot3.choices = sections
+
+        if form.validate_on_submit():
+            
+            slot1UserId = []
+            slot2UserId = []
+            slot3UserId = []
+            
+            for section in form.slot1.data:
+                slot1UserId += db.session.scalars(sa.select(User.id).where(User.classe == section)).all()
+            
+            for section in form.slot2.data:
+                slot2UserId += db.session.scalars(sa.select(User.id).where(User.classe == section)).all()
+            
+            for section in form.slot3.data:
+                slot3UserId += db.session.scalars(sa.select(User.id).where(User.classe == section)).all()
+
+            jobs = db.session.scalars(sa.select(Jobs.id)).all()
+            repartitionSlot1 = Repartition(jobs, slot1UserId, 2)
+            repartitionSlot2 = Repartition(jobs, slot2UserId, 2)
+            repartitionSlot3 = Repartition(jobs, slot3UserId, 3)
+
+            generateRepartitionPDF(repartitionSlot1, repartitionSlot2, repartitionSlot3)
+
+
+
+            return redirect(url_for('dashboard'))
+
+        return render_template("repart.html", user=user, form=form)

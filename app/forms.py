@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField, SelectMultipleField
 from wtforms.validators import DataRequired, ValidationError, regexp, Length
 from app import db
 import sqlalchemy as sa
@@ -59,3 +59,24 @@ class BatchRegister(FlaskForm):
 class SectionSummary(FlaskForm):
     section = SelectField("Classe")
     submit = SubmitField("Valider")
+
+class RepartForm(FlaskForm):
+    # Bad -> hard coded
+    slot1 = SelectMultipleField("9h-10h")
+    slot2 = SelectMultipleField("10h-11h")
+    slot3 = SelectMultipleField("11h-12h")
+    submit = SubmitField("Valider")
+
+    def validate(self, extra_validators):
+        if not super().validate():
+            return False
+
+        # Check if all wish is different
+        nbStaction = len(self.slot1.choices)
+        total = len(self.slot1.data) + len(self.slot3.data) + len(self.slot2.data)
+
+        if nbStaction != total:
+            self.slot1.errors.append("Erreur vérifier la section, il ne doit pas y avoirs de chevauchement")
+            return False
+        
+        return True

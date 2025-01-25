@@ -12,6 +12,8 @@ Identifiant: \t<b>{login}</b><br>
 Mot de passe: \t<b>{pwd}</b><br>
 """
 
+TIMES_SLOT = ["8h-9h","9h-10h","10h15-11h15"]
+
 #App config
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
