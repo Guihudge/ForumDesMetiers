@@ -8,7 +8,7 @@ from app.models import Jobs
 class LoginForm(FlaskForm):
     username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
     password = PasswordField('Mot de passe (jjmmaaaa)', validators=[DataRequired()])
-    remember_me = BooleanField('Ce souvenir de moi')
+    remember_me = BooleanField('Se souvenir de moi')
     submit = SubmitField('Connexion')
 
 class JobsCreationForm(FlaskForm):
@@ -48,7 +48,7 @@ class RegisterForm(FlaskForm):
     username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     classe = StringField('Classe', validators=[DataRequired()])
-    rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Proffesseur")], validators=[DataRequired()])
+    rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Professeur")], validators=[DataRequired()])
     submit = SubmitField('Valider')
 
 # Batch student register

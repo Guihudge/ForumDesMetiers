@@ -10,7 +10,7 @@ $ source .venv/bin/activate
 
 Installation des dépendances
 ```sh
-$ pip install -r requirment.txt
+$ pip install -r requirement.txt
 ```
 
 ## En production dans un environnement virtuelle
@@ -23,7 +23,7 @@ $ source .venv/bin/activate
 
 Installation des dépendances et du serveur de production
 ```sh
-$ pip install -r requirment.txt
+$ pip install -r requirement.txt
 $ pip install waitress
 ```
 
@@ -31,6 +31,10 @@ Génération du secret :
 ```sh
 $ python -c 'import secrets; print("export SECRET_KEY="+secrets.token_hex())' > .env
 $ source .env
+```
+
+```sh
+$ mkdir upload static
 ```
 
 Lancement de l'application :
