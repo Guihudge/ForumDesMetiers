@@ -57,7 +57,7 @@ class RegisterForm(FlaskForm):
         if (int(l) == 0 and self.classe.data) or (int(l) == 100):
             return super().validate()
         else: 
-            self.classe.errors.append("Un élève doit avoirs une classe")
+            self.classe.rightLevel.append("Un élève doit avoirs une classe")
             return False
 
 # Batch student register
