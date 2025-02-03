@@ -37,7 +37,7 @@ class MakeWish(FlaskForm):
         wishes = [self.first.data, self.second.data, self.third.data, self.fourth.data, self.fifth.data]
 
         if len(wishes) != len(set(wishes)):
-            self.first.errors.append("Les vœux doivent être différents.")
+            self.first.errors=["Les vœux doivent être différents."]
             return False
         
         return True
@@ -57,7 +57,7 @@ class RegisterForm(FlaskForm):
         if (int(l) == 0 and self.classe.data) or (int(l) == 100):
             return super().validate()
         else: 
-            self.classe.rightLevel.append("Un élève doit avoirs une classe")
+            self.classe.errors=["Un élève doit avoirs une classe"]
             return False
 
 # Batch student register
