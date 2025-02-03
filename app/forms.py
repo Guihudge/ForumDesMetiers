@@ -47,9 +47,18 @@ class RegisterForm(FlaskForm):
     displayName = StringField('Nom prénom', validators=[DataRequired()])
     username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    classe = StringField('Classe', validators=[DataRequired()])
+    classe = StringField('Classe')
     rightLevel = SelectField("Niveaux d'acces", choices=[(0, "Élève"), (100, "Professeur")], validators=[DataRequired()])
     submit = SubmitField('Valider')
+
+    def validate(self, extra_validators):
+        l = self.rightLevel.data
+
+        if (int(l) == 0 and self.classe.data) or (int(l) == 100):
+            return super().validate()
+        else: 
+            self.classe.errors.append("Un élève doit avoirs une classe")
+            return False
 
 # Batch student register
 class BatchRegister(FlaskForm):
