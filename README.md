@@ -8,7 +8,13 @@ Application de répartition pour le forum des métiers
 - Done !
 
 ### V2 milestone
-- Algo de répartition
+- Done !
+
+### V3
+- Ajouter un system pour split les classes
+- Ajouter la possibilité de choisir le nombre d'étudiants/intervenant sur les slots
+- Ajouter la possibilité de modifier un élève une fois importer (classe/mdp)
+- simplifier le déploiment au maximum (script/sauvgarde auto de la bd ...)
 
 ## Fonctionnalités présentes
 - Création d'élève
