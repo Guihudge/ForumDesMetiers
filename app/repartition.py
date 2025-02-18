@@ -8,7 +8,7 @@ import numpy as np
 
 #Config Section
 NON_WHISH = 1000
-ALREADY_ATTRIBUT = 1000000
+ALREADY_ATTRIBUT = 10000000000
 
 def getJobsIdFromDictName(name:str) -> int:
     return int(name.split("-")[0])
@@ -36,14 +36,14 @@ def generate_costMatrix(studentList, Jobs, jList, affectation):
         localOut = []
         w:list = WhishObjectToList(db.session.scalar(sa.select(WhishList).where(WhishList.id == student)),Jobs)
         for j in jList:
-            try:
-                i = w.index(getJobsIdFromDictName(j))
-                if student in affectation and i in affectation[student]:
+            if student in affectation and getJobsIdFromDictName(j) in affectation[student]:
                     localOut.append(-ALREADY_ATTRIBUT)
-                else:
+            else:
+                try:
+                    i = w.index(getJobsIdFromDictName(j))
                     localOut.append(-i)
-            except ValueError:
-                localOut.append(-NON_WHISH)
+                except ValueError:
+                    localOut.append(-NON_WHISH)
         
         out.append(localOut)
     return np.array(out)

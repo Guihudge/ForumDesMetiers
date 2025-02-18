@@ -12,6 +12,28 @@ Identifiant: \t<b>{login}</b><br>
 Mot de passe: \t<b>{pwd}</b><br>
 """
 
+REPARTION_STUDENT_MESSAGE="""
+Nom Prénom : {name} \t Classe: {section} <br>
+<center>
+<p><b> FORUM des MÉTIERS 2024 / 2025 </b></p>
+</center>
+<li>
+    <ul><b>→ En arrivant au réfectoire, prend ce document et de quoi prendre des notes. </b></ul>
+    <ul><b>→ Déplace-toi dans le calme.</b></ul>
+    <ul><b>→ Sois correct et poli avec tes interlocuteurs et écoute les autres afin d’éviter les répétitions.</b></ul>
+    <ul><b>→ Respecte l’ordre ci-dessous.</b></ul>
+</li>
+<center>
+<p>Voici les métiers que tu vas découvrir (entretien de 20 min environ) :</p>
+</center>
+<li>
+    <ul>1er métier    {job1}</ul>
+    <ul>2ème métier   {job2}</ul>
+    <ul>3ème métier   {job3}</ul>
+</li>
+<br><br>
+"""
+
 TIMES_SLOT = ["8h-9h","9h-10h","10h15-11h15"]
 
 #App config

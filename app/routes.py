@@ -296,7 +296,7 @@ def repart():
 
             jobs = db.session.scalars(sa.select(Jobs.id)).all()
             repartitionSlot1 = Repartition(jobs, slot1UserId, 2)
-            repartitionSlot2 = Repartition(jobs, slot2UserId, 2)
+            repartitionSlot2 = Repartition(jobs, slot2UserId, 3)
             repartitionSlot3 = Repartition(jobs, slot3UserId, 3)
 
             generateRepartitionPDF(repartitionSlot1, repartitionSlot2, repartitionSlot3)
