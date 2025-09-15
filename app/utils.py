@@ -1,5 +1,5 @@
 from fpdf import FPDF
-from app.config import STUDENT_MESSAGE, REPARTION_STUDENT_MESSAGE
+from app.config import STUDENT_MESSAGE
 from app.models import Jobs, User
 from app import db
 import sqlalchemy as sa

@@ -3,15 +3,21 @@ from app import app
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import *
-from app.forms import *
+from app.models import User, Jobs, WhishList
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSummary, RepartForm
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
-from app.config import Config, TIMES_SLOT
+from app.config import Config
 import csv
 from app.repartition import Repartition
 
 UPLOAD_PATH="./upload/"
+
+def getCurrentUser() -> User:
+    if isinstance(current_user, User):
+        return current_user
+    else:
+        raise TypeError("Unable to get logged user")
 
 # Main app page, default redirect to login
 @app.route('/')
@@ -23,7 +29,7 @@ def index():
 @app.route("/me")
 @login_required
 def me():
-    locUser:User = current_user
+    locUser:User = getCurrentUser()
     return f"Hi, {locUser.username}"
 
 # Log an user
@@ -51,7 +57,7 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    user:User = current_user
+    user:User = getCurrentUser()
     jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
     if user.rightLevel == 0: # student
         whishName = None
@@ -73,13 +79,13 @@ def dashboard():
     else:
         app.logger.critical(f"User {user.username} get a non correct access level ({user.rightLevel})!")
         logout_user()
-        return url_for(login)
+        return url_for("login")
 
 @app.route("/jobsCreation", methods=['GET', 'POST'])
 @login_required
 def jobsCreation():
     global jobsList
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
@@ -95,15 +101,15 @@ def jobsCreation():
 @app.route("/jobs")
 @login_required
 def jobs():
-    user:User = current_user
-    jobs = db.session.scalars(sa.select(Jobs)).all()
+    user:User = getCurrentUser()
+    jobs = sorted(db.session.scalars(sa.select(Jobs)).all(), key= lambda job: job.Name)
     return render_template("jobsList.html", jobs=jobs, user=user)
 
 # Page where student make choice
 @app.route("/jobselection", methods=['GET', 'POST'])
 @login_required
 def jobselection():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 0:
         return redirect(url_for('dashboard'))
     else:
@@ -139,7 +145,7 @@ def jobselection():
 @app.route("/summary", methods=['GET'])
 @login_required
 def summary():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
@@ -165,7 +171,7 @@ def summary():
 @app.route("/registerUser", methods=['GET', 'POST'])
 @login_required
 def registerUser():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
@@ -183,7 +189,7 @@ def registerUser():
 @app.route("/batchRegister", methods=['GET','POST'])
 @login_required
 def batchRegister():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
@@ -229,7 +235,7 @@ def batchRegister():
 @app.route("/classeSummary", methods=['GET','POST'])
 @login_required
 def classeSummary():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
@@ -259,7 +265,7 @@ def classeSummary():
 @app.route("/switchWishStatus", methods=['GET'])
 @login_required
 def switchWishStatus():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
@@ -269,7 +275,7 @@ def switchWishStatus():
 @app.route("/repart", methods=['GET','POST'])
 @login_required
 def repart():
-    user:User = current_user
+    user:User = getCurrentUser()
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
