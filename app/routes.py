@@ -10,6 +10,7 @@ from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartiti
 from app.config import Config
 import csv
 from app.repartition import Repartition
+from wtforms import Label
 
 UPLOAD_PATH="./upload/"
 
@@ -115,7 +116,7 @@ def jobselection():
     else:
         if Config.Open_Whish:
             # Jobs selection
-            jobs = db.session.scalars(sa.select(Jobs)).all()
+            jobs = sorted(db.session.scalars(sa.select(Jobs)).all(), key= lambda job: job.Name)
             form = MakeWish()
             jobsList = [(i.id, i.Name) for i in jobs]
             form.first.choices = jobsList
@@ -310,3 +311,25 @@ def repart():
             return send_file("../static/repart.pdf")
 
         return render_template("repart.html", user=user, form=form)
+    
+@app.route("/jobsEdit", methods=['GET','POST'])
+@login_required
+def jobsEdit():
+    user:User = getCurrentUser()
+    if user.rightLevel != 100:
+        return redirect(url_for('dashboard'))
+    else:
+        id = request.args['id']
+        jobs = sorted(db.session.scalars(sa.select(Jobs).where(Jobs.id == id)).all(), key= lambda job: job.Name)
+        form = JobsCreationForm()
+        form.newJobs = False
+        form.jobsName.data = jobs[0].Name
+        form.description.data = jobs[0].description
+        form.submit.label = Label(form.submit.id, "Modifier le métier")
+
+        if form.validate_on_submit():
+            print(f"Données du formulaire reçues : {request.form}")
+            db.session.execute(sa.update(Jobs).where(Jobs.id == id).values(Name=request.form["jobsName"], description=request.form["description"]))
+            db.session.commit()
+            return redirect(url_for('jobs'))
+        return render_template("jobsCreate.html", form=form, user=user)

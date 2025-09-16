@@ -14,11 +14,12 @@ class LoginForm(FlaskForm):
 class JobsCreationForm(FlaskForm):
     jobsName = StringField("Nom du métier", validators=[DataRequired()])
     description = StringField("Description", validators=[Length(max=512)])
+    newJobs = True
     submit = SubmitField('Ajouter le metier')
 
     def validate_jobsName(self, jobs):
         jobs = db.session.scalar(sa.select(Jobs).where(Jobs.Name == jobs.data))
-        if jobs is not None:
+        if self.newJobs and jobs is not None:
             raise ValidationError("Métier déjà crée")
 
 class MakeWish(FlaskForm):

@@ -5,7 +5,11 @@
         <h1 class="mb-4">Liste des métiers</h1>
         <ul class="list-group">
         {% for job in jobs %}
-            <li class="list-group-item">{{ job.Name }} : {{ job.description }}</li>
+            <li class="list-group-item">
+                {{ job.Name }} 
+                {% if user.rightLevel is eq(100) %}
+                <a href="{{ url_for('jobsEdit', id=job.id) }}">✎</a> 
+                {% endif %}: {{ job.description }}</li>
         {% endfor %}
         </ul>
     </div>

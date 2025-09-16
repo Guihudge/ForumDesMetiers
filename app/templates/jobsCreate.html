@@ -16,7 +16,7 @@
 
             <div class="mb-3">
                 <label for="description" class="form-label">{{ form.description.label }}</label>
-                {{ form.description(class="form-control", id="description", size=64) }}
+                {{ form.description(class="form-control", id="description", size=512) }}
                 {% for error in form.description.errors %}
                     <div class="text-danger mt-1">[{{ error }}]</div>
                 {% endfor %}
