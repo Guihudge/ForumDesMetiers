@@ -14,10 +14,7 @@ Application de répartition pour le forum des métiers
 - Ajouter un system pour split les classes
 - Ajouter la possibilité de choisir le nombre d'étudiants/intervenant sur les slots
 - Ajouter la possibilité de modifier un élève une fois importer (classe/mdp)
-- Ajouter la possibilité de modifier un metier
 - simplifier le déploiment au maximum (script/sauvgarde auto de la bd ...)
-- Corriger l'orth des pages web.
-- Changer le mot de passe d'un élève (non implémenté)
 - Changer les voeux d'un élève (non implémenté)
 
 ## Fonctionnalités présentes
