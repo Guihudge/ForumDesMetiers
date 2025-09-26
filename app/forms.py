@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField, SelectMultipleField, IntegerField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField, SelectMultipleField, IntegerField, RadioField
 from wtforms.validators import DataRequired, ValidationError, regexp, Length
 from app import db
 import sqlalchemy as sa
-from app.models import Jobs
+from app.models import Jobs, User
 
 class LoginForm(FlaskForm):
     username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
@@ -66,7 +66,7 @@ class BatchRegister(FlaskForm):
     file = FileField("Lsite au format csv.", validators=[DataRequired()])
     submit = SubmitField('Envoyer')
 
-class SectionSummary(FlaskForm):
+class SectionSelection(FlaskForm):
     section = SelectField("Classe")
     submit = SubmitField("Valider")
 
@@ -93,3 +93,31 @@ class RepartForm(FlaskForm):
             return False
         
         return True
+
+class SplitSectionForm(FlaskForm):
+    submit = SubmitField('Valider')
+
+    @staticmethod
+    def create_form(users:list[User]):
+        form_name = 'SplitSection'
+        fields = {
+            
+            'submit': SubmitField('Submit')
+        }
+        for user in users:
+            # Champ pour le Groupe A
+            field_name_a = f'choice_A_{user.id}'
+            fields[field_name_a] = BooleanField(
+                label='Groupe A',  # Le label n'est pas utilisé dans le tableau, mais doit être présent
+                default=False
+            )
+            
+            # Champ pour le Groupe B
+            field_name_b = f'choice_B_{user.id}'
+            fields[field_name_b] = BooleanField(
+                label='Groupe B',
+                default=False
+            )
+        
+        # On utilise 'type' pour créer une nouvelle classe de formulaire
+        return type(form_name, (FlaskForm,), fields)

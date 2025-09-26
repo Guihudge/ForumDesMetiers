@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% macro render_field(field) %}
+<div class="mb-3">
+    <label for="{{ field.id }}" class="form-label">{{ field.label.text }}</label>
+    {{ field(class="form-control", id=field.id) }}
+    {% for error in field.errors %}
+        <div class="text-danger mt-1">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Partage d'une classe</h1>
+    <div class="alert alert-danger" role="alert">
+        Attention c'est une action irréversible !
+    </div>
+    {% for error in form.submit.errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+    <form method="POST">
+        {{ form.csrf_token }}
+        
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Élève</th>
+                    <th scope="col" class="checkbox-cell">Groupe A</th>
+                    <th scope="col" class="checkbox-cell">Groupe B</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.displayName }}</td>
+                    
+                    {# Champ pour le Groupe A #}
+                    <td class="checkbox-cell">
+                        {{ form['choice_A_' ~ user.id] }}
+                    </td>
+                    
+                    {# Champ pour le Groupe B #}
+                    <td class="checkbox-cell">
+                        {{ form['choice_B_' ~ user.id] }}
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div>
+            {{ form.submit(class="btn btn-primary btn-lg") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

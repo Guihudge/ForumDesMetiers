@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Jobs, WhishList
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSummary, RepartForm
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, SplitSectionForm
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
 from app.config import Config
@@ -240,7 +240,7 @@ def classeSummary():
     if user.rightLevel != 100:
         return redirect(url_for('dashboard'))
     else:
-        form = SectionSummary()
+        form = SectionSelection()
         form.section.choices = sorted(list(set(db.session.scalars(sa.select(User.classe).where(User.rightLevel == 0)).all())))
         if form.validate_on_submit():
             jobs = convertjobsListToDict(db.session.scalars(sa.select(Jobs)).all())
@@ -261,7 +261,7 @@ def classeSummary():
                     s.append(local)
             return render_template("summary.html", s=s, user=user)
 
-        return render_template("section_summary.html", form=form, user=user)
+        return render_template("section_selection.html", form=form, user=user)
     
 @app.route("/switchWishStatus", methods=['GET'])
 @login_required
@@ -333,3 +333,66 @@ def jobsEdit():
             db.session.commit()
             return redirect(url_for('jobs'))
         return render_template("jobsCreate.html", form=form, user=user)
+
+@app.route("/splitSectionStep1", methods=['GET', 'POST'])
+@login_required
+def splitSectionStep1():
+    user:User = getCurrentUser()
+    if user.rightLevel != 100:
+        return redirect(url_for("dashboard"))
+    else:
+        form = SectionSelection()
+        form.section.choices = sorted(list(set(db.session.scalars(sa.select(User.classe).where(User.rightLevel == 0)).all())))
+        if form.validate_on_submit():
+            return(redirect(url_for("splitSectionStep2", section=form.section.data)))
+    return render_template("section_selection.html", form=form, user=user)
+
+
+@app.route("/splitSectionStep2", methods=['GET', 'POST'])
+@login_required
+def splitSectionStep2():
+    user:User = getCurrentUser()
+    if user.rightLevel != 100:
+        return redirect(url_for("dashboard"))
+    else:
+        if not 'section' in request.args.keys():
+            return redirect(url_for("splitSectionStep1"))
+        
+        section = request.args['section']
+        Users = db.session.scalars(sa.select(User).where(User.rightLevel == 0).where(User.classe == section)).all()
+        FormClass = SplitSectionForm.create_form(Users)
+        form = FormClass()
+
+        if form.validate_on_submit():
+            is_valid = True
+            results = {}
+            
+            for user in Users:
+                field_name_a = f'choice_A_{user.id}'
+                field_name_b = f'choice_B_{user.id}'
+                
+                is_in_group_a = getattr(form, field_name_a).data
+                is_in_group_b = getattr(form, field_name_b).data
+                
+                # Validation d'exclusivité : (A AND NOT B) OR (B AND NOT A)
+                # Ceci équivaut à (A XOR B)
+                if (is_in_group_a and is_in_group_b) or (not is_in_group_a and not is_in_group_b):
+                    is_valid = False
+                    # Vous pouvez ajouter ici un message d'erreur spécifique à Flask
+                    form.submit.errors.append(f"Erreur pour {user.username}: Vous devez sélectionner un et un seul groupe (A ou B).")
+                    break # Arrêter la boucle et la validation
+                    
+                # Si la validation réussit pour cet utilisateur
+                results[user.id] = {
+                    'A': is_in_group_a,
+                    'B': is_in_group_b
+                }
+
+            if is_valid:
+                for stu in results:
+                    db.session.execute(sa.update(User).where(User.id == stu).values(classe=section + ("A" if results[stu]["A"] else "B")))
+                db.session.commit()
+                return redirect(url_for('dashboard'))
+
+        return render_template('splitSection.html', form=form, users=Users)
+
