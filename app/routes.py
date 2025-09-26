@@ -250,7 +250,7 @@ def classeSummary():
             for u in Users:
                 w = db.session.scalar(sa.select(WhishList).where(WhishList.id == u.id))
                 if w is None:
-                    s.append([u.displayName if u.displayName is not None else u.username, u.classe,"--", "--", "--", "--", "--"])
+                    s.append([u.displayName if u.displayName is not None else u.username, u.classe,"--", "--", "--", "--", "--", u.id])
                 else:
                 
                     local = [u.displayName if u.displayName is not None else u.username , u.classe]
@@ -259,6 +259,7 @@ def classeSummary():
                     local.append(jobs[w.third])
                     local.append(jobs[w.fourth])
                     local.append(jobs[w.fifth])
+                    local.append(u.id)
                     s.append(local)
             return render_template("summary.html", s=s, user=user)
 
