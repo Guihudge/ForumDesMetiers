@@ -13,4 +13,9 @@
         {% endfor %}
         </ul>
     </div>
+    {% if user.rightLevel is eq(100) %}
+        <div class="container mt-5">
+            <a href="{{ url_for('jobsCreation') }}">Ajouter un métier</a> 
+        </div>
+    {% endif %}
 {% endblock %}
