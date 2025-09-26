@@ -21,7 +21,7 @@
         <tbody>
             {% for l in s %}
             <tr>
-                <td>{{ l[0] }}</td>
+                <td> <a href="{{ url_for('editWhish', id=l[7]) }}">{{ l[0] }}</a> </td>
                 <td>{{ l[1] }}</td>
                 <td>{{ l[2] }}</td>
                 <td>{{ l[3] }}</td>

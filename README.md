@@ -11,9 +11,7 @@ Application de répartition pour le forum des métiers
 - Done !
 
 ### V3
-- Ajouter la possibilité de modifier un élève une fois importer (classe/mdp)
 - simplifier le déploiment au maximum (script/sauvgarde auto de la bd ...)
-- Changer les voeux d'un élève (non implémenté)
 
 ## Fonctionnalités présentes
 - Création d'élève

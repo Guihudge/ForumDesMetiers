@@ -138,7 +138,7 @@ def jobselection():
                 
                 db.session.commit()
                 return redirect(url_for('dashboard'))
-            return render_template("jobsSelection.html", form=form, user=user)
+            return render_template("jobsSelection.html", form=form, user=user, title="Sélection des métiers")
         else:
             return redirect(url_for('dashboard'))
 
@@ -156,7 +156,7 @@ def summary():
         for u in Users:
             w = db.session.scalar(sa.select(WhishList).where(WhishList.id == u.id))
             if w is None:
-                s.append([u.displayName if u.displayName is not None else u.username, u.classe,"--", "--", "--", "--", "--"])
+                s.append([u.displayName if u.displayName is not None else u.username, u.classe,"--", "--", "--", "--", "--", u.id])
             else:
                 
                 local = [u.displayName if u.displayName is not None else u.username , u.classe]
@@ -165,6 +165,7 @@ def summary():
                 local.append(jobs[w.third])
                 local.append(jobs[w.fourth])
                 local.append(jobs[w.fifth])
+                local.append(u.id)
                 s.append(local)
 
         return render_template("summary.html", s=s, user=user)
@@ -448,3 +449,51 @@ def editUser():
         else:
             print("Validation Error")
         return render_template("registerUser.html", form=form, user=user, title="Modification de l'utilisateur")
+
+@app.route("/editWhish", methods=['GET', 'POST'])
+@login_required
+def editWhish():
+    user:User = getCurrentUser()
+    if user.rightLevel != 100:
+        return redirect(url_for("dashboard"))
+    else:
+        if not 'id' in request.args.keys():
+                return redirect(url_for("getUser", redirect="editWhish"))
+        id = int(request.args["id"])
+        student:User = db.session.scalars(sa.select(User).where(User.id == id)).all()[0]
+        whish:WhishList = db.session.scalar(sa.select(WhishList).where(WhishList.id == id))
+        form = MakeWish()
+
+        jobs = sorted(db.session.scalars(sa.select(Jobs)).all(), key= lambda job: job.Name)
+            
+        jobsList = [(i.id, i.Name) for i in jobs]
+        form.first.choices = jobsList
+        form.second.choices = jobsList
+        form.third.choices = jobsList
+        form.fourth.choices = jobsList
+        form.fifth.choices = jobsList
+
+        if whish is not None and "first" not in request.form:
+            print("load default")
+            form.first.default = whish.first
+            form.second.default = whish.second
+            form.third.default = whish.third
+            form.fourth.default = whish.fourth
+            form.fifth.default = whish.fifth
+            form.process()
+        
+        if form.validate_on_submit():
+            if whish is None:
+                w = WhishList(id=id, first=request.form["first"], second=request.form["second"], third=request.form["third"], fourth=request.form["fourth"], fifth=request.form["fifth"])
+                db.session.add(w)
+                
+            else:
+                db.session.execute(
+                        sa.update(WhishList)
+                            .where(WhishList.id == id)
+                            .values(first=request.form["first"], second=request.form["second"], third=request.form["third"], fourth=request.form["fourth"], fifth=request.form["fifth"])
+                    )
+            db.session.commit()
+            return redirect(url_for("dashboard"))
+            
+        return render_template("jobsSelection.html", form=form, user=user, title=f"Modification des voeux de {student.displayName}")

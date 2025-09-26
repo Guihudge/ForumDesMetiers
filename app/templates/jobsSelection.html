@@ -7,9 +7,41 @@
 </div>
 {% endmacro %}
 
+{% block script %}
+<script>
+    $(document).ready(function() {
+        // Cible l'élément HTML généré pour le champ 'user_id'
+        $('#first').select2({
+            theme: 'bootstrap-5', // Utilise le thème pour l'intégration visuelle avec Bootstrap
+            placeholder: "Selectioner un métier",
+            
+        });
+        $('#second').select2({
+            theme: 'bootstrap-5', // Utilise le thème pour l'intégration visuelle avec Bootstrap
+            placeholder: "Selectioner un métier",
+            
+        });
+        $('#third').select2({
+            theme: 'bootstrap-5', // Utilise le thème pour l'intégration visuelle avec Bootstrap
+            placeholder: "Selectioner un métier",
+            
+        });
+        $('#fourth').select2({
+            theme: 'bootstrap-5', // Utilise le thème pour l'intégration visuelle avec Bootstrap
+            placeholder: "Selectioner un métier",
+            
+        });
+        $('#fifth').select2({
+            theme: 'bootstrap-5', // Utilise le thème pour l'intégration visuelle avec Bootstrap
+            placeholder: "Selectioner un métier",
+        });
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <h1 class="mb-4">Sélection des métiers</h1>
+    <h1 class="mb-4">{{ title }}</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
 
