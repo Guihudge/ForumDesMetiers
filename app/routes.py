@@ -302,9 +302,9 @@ def repart():
                 slot3UserId += db.session.scalars(sa.select(User.id).where(User.classe == section)).all()
 
             jobs = db.session.scalars(sa.select(Jobs.id)).all()
-            repartitionSlot1 = Repartition(jobs, slot1UserId, 2)
-            repartitionSlot2 = Repartition(jobs, slot2UserId, 3)
-            repartitionSlot3 = Repartition(jobs, slot3UserId, 3)
+            repartitionSlot1 = Repartition(jobs, slot1UserId, form.nbStudentSlot1.data)
+            repartitionSlot2 = Repartition(jobs, slot2UserId, form.nbStudentSlot2.data)
+            repartitionSlot3 = Repartition(jobs, slot3UserId, form.nbStudentSlot3.data)
 
             generateRepartitionPDF(repartitionSlot1, repartitionSlot2, repartitionSlot3)
 

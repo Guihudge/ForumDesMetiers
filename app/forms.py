@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField, SelectMultipleField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FileField, SelectMultipleField, IntegerField
 from wtforms.validators import DataRequired, ValidationError, regexp, Length
 from app import db
 import sqlalchemy as sa
@@ -73,8 +73,11 @@ class SectionSummary(FlaskForm):
 class RepartForm(FlaskForm):
     # Bad -> hard coded
     slot1 = SelectMultipleField("Créneau 1")
+    nbStudentSlot1 = IntegerField("Élève(s) par intervenant")
     slot2 = SelectMultipleField("Créneau 2")
+    nbStudentSlot2 = IntegerField("Élève(s) par intervenant")
     slot3 = SelectMultipleField("Créneau 3")
+    nbStudentSlot3 = IntegerField("Élève(s) par intervenant")
     submit = SubmitField("Valider")
 
     def validate(self, extra_validators):
