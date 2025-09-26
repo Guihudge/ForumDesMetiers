@@ -121,3 +121,11 @@ class SplitSectionForm(FlaskForm):
         
         # On utilise 'type' pour créer une nouvelle classe de formulaire
         return type(form_name, (FlaskForm,), fields)
+    
+class UserSelectionForm(FlaskForm):
+    user_id = SelectField(
+        'Sélectionner un utilisateur',
+        validators=[DataRequired()],
+        # La classe 'form-control' est pour Bootstrap
+        render_kw={'class': 'form-control'} 
+    )

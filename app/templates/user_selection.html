@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% macro render_field(field) %}
+<div class="mb-3">
+    <label for="{{ field.id }}" class="form-label">{{ field.label.text }}</label>
+    {{ field(class="form-control", id=field.id) }}
+    {% for error in field.errors %}
+        <div class="text-danger mt-1">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+        // Cible l'élément HTML généré pour le champ 'user_id'
+        $('#user_id').select2({
+            theme: 'bootstrap-5', // Utilise le thème pour l'intégration visuelle avec Bootstrap
+            placeholder: "Tapez le nom de l'utilisateur...",
+            allowClear: true // Permet de vider la sélection
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Selectionner un utilisateur</h1>
+    <!-- Ton contenu ici -->
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.user_id.label(class="form-label") }}
+            {{ form.user_id(class="form-select") }} 
+        </div>
+        <button type="submit" class="btn btn-primary">Valider la sélection</button>
+    </form>
+</div>
+{% endblock %}

@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Jobs, WhishList
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, SplitSectionForm
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
 from app.config import Config
@@ -184,7 +184,7 @@ def registerUser():
             db.session.add(u)
             db.session.commit()
             return redirect(url_for('dashboard'))
-        return render_template("registerUser.html", form=form, user=user)
+        return render_template("registerUser.html", form=form, user=user, title="Formulaire d'Inscription")
     
 # Batch register using generated list from pronote
 @app.route("/batchRegister", methods=['GET','POST'])
@@ -396,3 +396,55 @@ def splitSectionStep2():
 
         return render_template('splitSection.html', form=form, users=Users)
 
+@app.route("/getUser", methods=['GET', 'POST'])
+@login_required
+def getUser():
+    user:User = getCurrentUser()
+    if user.rightLevel != 100:
+        return redirect(url_for("dashboard"))
+    else:
+        form = UserSelectionForm()
+        data = []
+
+        for u in sorted(list(set(db.session.scalars(sa.select(User).where(User.rightLevel == 0)).all())), key= lambda user: user.displayName):
+            data.append((u.id, u.displayName))
+
+        form.user_id.choices = data
+        if form.validate_on_submit():
+            if 'redirect' in request.args.keys():
+                return redirect(url_for(request.args['redirect'], id=form.user_id.data))
+            else:
+                return(redirect(url_for("dashboard")))
+    return render_template("user_selection.html", form=form)
+
+@app.route("/editUser", methods=['GET', 'POST'])
+@login_required
+def editUser():
+    user:User = getCurrentUser()
+    if user.rightLevel != 100:
+        return redirect(url_for("dashboard"))
+    else:
+        if not 'id' in request.args.keys():
+                return redirect(url_for("getUser", redirect="editUser"))
+        id = int(request.args["id"])
+        student:User = db.session.scalars(sa.select(User).where(User.id == id)).all()[0]
+        form = RegisterForm()
+
+        form.username.data = student.username
+        form.username.validators = []
+        
+        form.displayName.data = student.displayName
+        form.displayName.validators = []
+        
+        form.classe.data = student.classe
+        
+        del form.password
+
+
+        if form.validate_on_submit():
+            db.session.execute(sa.update(User).where(User.id == id).values(username=request.form["username"], rightLevel=request.form["rightLevel"], displayName=request.form["displayName"], classe=request.form["classe"]))
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+        else:
+            print("Validation Error")
+        return render_template("registerUser.html", form=form, user=user, title="Modification de l'utilisateur")
