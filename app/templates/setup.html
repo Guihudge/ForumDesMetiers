@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Importer une liste</h1>
+        <div class="mt-3">
+            <a href="{{ url_for('newDatabase') }}">
+                <button class="btn btn-primary btn-lg">
+                    Nouvelle base de données
+                </button>
+            </a>    
+        </div>
+        <div class="mt-3">
+            <a href="{{ url_for('restore', type='file') }}">
+                <button class="btn btn-primary btn-lg">
+                    Restaurer une base de données locale
+                </button>
+            </a>
+        </div>
+        <div class="mt-3">
+            <a href="{{ url_for('restore', type='nextcloud') }}">
+                <button class="btn btn-primary btn-lg">
+                    Restaurer une base de données sur NextCloud
+                </button>
+            </a>
+        </div>
+</div>
+{% endblock %}

@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Jobs, WhishList
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm, UploadFile
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
 from app.config import Config
@@ -24,7 +24,51 @@ def getCurrentUser() -> User:
 @app.route('/')
 @app.route('/index')
 def index():
-    return redirect(url_for('login'))
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
+    try:
+        users = db.session.scalars(sa.select(User)).all()
+        if len(users) != 0:
+            return redirect(url_for('login'))
+        else:
+            return redirect(url_for("setup"))
+    except:
+        return redirect(url_for("setup"))
+
+@app.route("/setup")
+def setup():
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
+    
+    return render_template("setup.html")
+
+@app.route("/newDatabase")
+def newDatabase():
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
+    
+    return "Creation de la base de données!"
+
+@app.route("/restore", methods=['GET', 'POST'])
+def restore():
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
+    if not 'type' in request.args.keys():
+                return redirect(url_for("setup"))
+    
+    type = request.args["type"]
+    if type == "file":
+        form = UploadFile()
+        if form.validate_on_submit():
+            file = request.files[form.file.name]
+            file.save(Config.SQLALCHEMY_DATABASE_URI[10:])
+            Config.Setup_Done = True
+            return redirect(url_for('login'))
+        
+        return render_template("uploadFile.html", form=form, title="Restauration de la base de données")
+    elif type == "nextcloud":
+        return "Use nextcloud to restore"
+    return redirect(url_for("setup"))
 
 #Check if user is loged and get his username
 @app.route("/me")

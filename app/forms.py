@@ -66,6 +66,10 @@ class BatchRegister(FlaskForm):
     file = FileField("Lsite au format csv.", validators=[DataRequired()])
     submit = SubmitField('Envoyer')
 
+class UploadFile(FlaskForm):
+    file = FileField("Fichier", validators=[DataRequired()])
+    submit = SubmitField('Envoyer')
+
 class SectionSelection(FlaskForm):
     section = SelectField("Classe")
     submit = SubmitField("Valider")

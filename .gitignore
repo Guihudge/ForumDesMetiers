@@ -192,3 +192,4 @@ test*.csv
 *.pdf
 *.DS_Store
 upload/
+test/

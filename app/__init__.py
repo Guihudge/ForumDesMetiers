@@ -17,6 +17,7 @@ login.login_view = 'login'
 
 from app import routes, models
 
+"""
 with app.app_context():
     # Init db if empty
     try:
@@ -44,3 +45,4 @@ with app.app_context():
         db.session.add(u)
         db.session.commit()
 
+"""

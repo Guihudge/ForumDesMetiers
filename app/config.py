@@ -43,4 +43,5 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess' #TODO: CHANGE IT FOR PROD!
     UPLOAD_PATH=os.environ.get('UPLOAD_PATH') or "./upload/"
     Open_Whish = True
+    Setup_Done = False
     
