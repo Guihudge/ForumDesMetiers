@@ -29,6 +29,7 @@ def index():
     try:
         users = db.session.scalars(sa.select(User)).all()
         if len(users) != 0:
+            Config.Setup_Done = True
             return redirect(url_for('login'))
         else:
             return redirect(url_for("setup"))
@@ -42,12 +43,25 @@ def setup():
     
     return render_template("setup.html")
 
-@app.route("/newDatabase")
+@app.route("/newDatabase", methods=['GET', 'POST'])
 def newDatabase():
     if Config.Setup_Done:
         return redirect(url_for('login'))
+    default = {"username":"admin", "displayName":"Administrateur", "rightLevel":100}
+    form = RegisterForm(data=default)
+
+    #form.process()
+    print(request.form)
+    if form.validate_on_submit():
+        db.create_all()
+        u = User(username=form.username.data, displayName=form.displayName.data, classe=form.classe.data)
+        u.set_password(form.password.data)
+        u.set_access(form.rightLevel.data)
+        db.session.add(u)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
     
-    return "Creation de la base de données!"
+    return render_template("registerUser.html", form=form, title="Creation de l'administrateur")
 
 @app.route("/restore", methods=['GET', 'POST'])
 def restore():
