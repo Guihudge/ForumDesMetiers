@@ -139,3 +139,8 @@ class NextCloudLogin(FlaskForm):
     nc_username = StringField("utilisateur NextCloud")
     nc_password = PasswordField("NextCloud App Password")
     submit = SubmitField("Valider")
+
+
+class listSelect(FlaskForm):
+    select = SelectField(validators=[DataRequired()])
+    submit = SubmitField("Valider")

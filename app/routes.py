@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Jobs, WhishList
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm, UploadFile, NextCloudLogin
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm, UploadFile, NextCloudLogin, listSelect
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
 from app.config import Config
@@ -76,6 +76,8 @@ def nextCloudLogin():
                 form.nc_password.errors.append(f"Impossible de ce connecter au serveur NextCloud avec l'érreur: {str(e)}")
                 return render_template("nextCloudLogin.html", form=form)            
 
+            if "redirect" in request.args:
+                return redirect(url_for(request.args["redirect"]))
             return redirect(url_for("backupSetup"))
         
     return render_template("nextCloudLogin.html", form=form)
@@ -135,8 +137,38 @@ def restore():
         
         return render_template("uploadFile.html", form=form, title="Restauration de la base de données")
     elif type == "nextcloud":
-        return "Use nextcloud to restore"
+        return redirect(url_for("nextCloudLogin", redirect="NCrestore"))
     return redirect(url_for("setup"))
+
+@app.route("/NCrestore", methods=['GET', 'POST'])
+def NCrestore():
+    try:
+        webdav = getWebDavClient()
+    except ValueError:
+        return redirect(url_for("nextCloudLogin", redirect="NCrestore"))
+    
+    years = []
+
+    for file in webdav.ls(f"ForumDesMetier"):
+        print(file)
+        if file["type"] == "directory":
+            years.append(file["name"])
+    
+    availableDB = []
+
+    for year in years:
+        for file in webdav.ls(year):
+            if file["type"] == "file" and file["content_length"] > 0:
+                availableDB.append(file["name"])
+    
+    form = listSelect()
+    form.select.label = Label(field_id=form.select.id, text="Sélectionner la base de donnée pour la restauration")
+    form.select.choices = availableDB
+
+    if form.validate_on_submit():
+        webdav.download_file(form.select.data, Config.SQLALCHEMY_DATABASE_URI[10:])
+        return redirect(url_for("backupSetup"))
+    return render_template("listSelect.html", form=form)
 
 @app.route("/setupComplet", methods=['GET', 'POST'])
 def setupComplet():
@@ -381,7 +413,7 @@ def classeSummary():
                     local.append(u.id)
                     s.append(local)
             return render_template("summary.html", s=s, user=user)
-
+        
         return render_template("section_selection.html", form=form, user=user)
     
 @app.route("/switchWishStatus", methods=['GET'])
