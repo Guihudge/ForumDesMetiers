@@ -133,3 +133,9 @@ class UserSelectionForm(FlaskForm):
         # La classe 'form-control' est pour Bootstrap
         render_kw={'class': 'form-control'} 
     )
+
+class NextCloudLogin(FlaskForm):
+    nc_server = StringField("Serveur NextCloud", validators=[DataRequired()])
+    nc_username = StringField("utilisateur NextCloud")
+    nc_password = PasswordField("NextCloud App Password")
+    submit = SubmitField("Valider")

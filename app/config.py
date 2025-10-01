@@ -44,4 +44,7 @@ class Config:
     UPLOAD_PATH=os.environ.get('UPLOAD_PATH') or "./upload/"
     Open_Whish = True
     Setup_Done = False
+    NC_Client = None
+    BackupManager = None
+    BackupErrorLog = []
     

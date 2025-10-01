@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% macro render_field(field) %}
+
+<div class="mb-3">
+    <label for="{{ field.id }}" class="form-label">{{ field.label.text }}</label>
+    {{ field(class="form-control", id=field.id) }}
+    {% for error in field.errors %}
+        <div class="text-danger mt-1">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Connexion à NextCloud</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <!-- Champs du formulaire -->
+        {{ render_field(form.nc_server) }}
+        {{ render_field(form.nc_username) }}
+        {{ render_field(form.nc_password) }}
+        
+
+        <!-- Bouton de soumission -->
+        <div class="mt-3">
+            {{ form.submit(class="btn btn-primary btn-lg") }}
+        </div>
+    </form>
+    <div class="mt-3">
+        <a href="{{ url_for('setupComplet') }}">
+            <button class="btn btn-danger btn-lg">
+                Sauter la configuration de la sauvegarde automatique de la base de donné
+            </button>
+        </a>
+    </div>
+</div>
+
+{% endblock %}

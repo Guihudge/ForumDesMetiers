@@ -4,13 +4,16 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Jobs, WhishList
-from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm, UploadFile
+from app.forms import LoginForm, JobsCreationForm, MakeWish, RegisterForm, BatchRegister, SectionSelection, RepartForm, UserSelectionForm, SplitSectionForm, UploadFile, NextCloudLogin
 from flask import request
 from app.utils import convertjobsListToDict, generateLoginPDF, generateRepartitionPDF
 from app.config import Config
 import csv
 from app.repartition import Repartition
 from wtforms import Label
+from webdav4.client import Client as ncClient
+from datetime import datetime
+from app.backupManager import setupBackupManager
 
 UPLOAD_PATH="./upload/"
 
@@ -19,6 +22,13 @@ def getCurrentUser() -> User:
         return current_user
     else:
         raise TypeError("Unable to get logged user")
+
+def getWebDavClient() -> ncClient:
+    if Config.NC_Client is not None:
+        return Config.NC_Client
+    else:
+        raise ValueError("Not logged in Next Cloud")
+
 
 # Main app page, default redirect to login
 @app.route('/')
@@ -43,6 +53,51 @@ def setup():
     
     return render_template("setup.html")
 
+@app.route("/nextCloudLogin", methods=['GET', 'POST'])
+def nextCloudLogin():
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
+    
+    form = NextCloudLogin()
+    if form.validate_on_submit():
+        if form.nc_username.data == "" or form.nc_password.data == "":
+            print("Login Flow method")
+            return "not implemented"
+        else:
+            print("App pass method")
+            try:
+                Config.NC_Client = ncClient(form.nc_server.data+f"/remote.php/dav/files/{form.nc_username.data}", auth=(form.nc_username.data, form.nc_password.data))
+                webdav = getWebDavClient()
+            
+                if not webdav.exists("ForumDesMetier"):
+                    webdav.mkdir("ForumDesMetier")
+
+            except Exception as e:
+                form.nc_password.errors.append(f"Impossible de ce connecter au serveur NextCloud avec l'érreur: {str(e)}")
+                return render_template("nextCloudLogin.html", form=form)            
+
+            return redirect(url_for("backupSetup"))
+        
+    return render_template("nextCloudLogin.html", form=form)
+
+@app.route("/backupSetup", methods=['GET', 'POST'])
+def backupSetup():
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
+    
+    webdav = getWebDavClient()
+            
+    if not webdav.exists("ForumDesMetier"):
+        webdav.mkdir("ForumDesMetier")
+    if not webdav.exists(f"ForumDesMetier/{datetime.now().year}"):
+        webdav.mkdir(f"ForumDesMetier/{datetime.now().year}")
+    
+    databasePath = Config.SQLALCHEMY_DATABASE_URI[10:]
+    webdav.upload_file(databasePath, f"ForumDesMetier/{datetime.now().year}/app-{datetime.now()}.db")
+
+    Config.BackupManager = setupBackupManager()
+    return redirect(url_for('setupComplet'))
+
 @app.route("/newDatabase", methods=['GET', 'POST'])
 def newDatabase():
     if Config.Setup_Done:
@@ -59,7 +114,7 @@ def newDatabase():
         u.set_access(form.rightLevel.data)
         db.session.add(u)
         db.session.commit()
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('nextCloudLogin'))
     
     return render_template("registerUser.html", form=form, title="Creation de l'administrateur")
 
@@ -76,13 +131,17 @@ def restore():
         if form.validate_on_submit():
             file = request.files[form.file.name]
             file.save(Config.SQLALCHEMY_DATABASE_URI[10:])
-            Config.Setup_Done = True
-            return redirect(url_for('login'))
+            return redirect(url_for('setupComplet'))
         
         return render_template("uploadFile.html", form=form, title="Restauration de la base de données")
     elif type == "nextcloud":
         return "Use nextcloud to restore"
     return redirect(url_for("setup"))
+
+@app.route("/setupComplet", methods=['GET', 'POST'])
+def setupComplet():
+    Config.Setup_Done = True
+    return redirect(url_for("login"))
 
 #Check if user is loged and get his username
 @app.route("/me")
@@ -94,6 +153,8 @@ def me():
 # Log an user
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if not Config.Setup_Done:
+        return redirect(url_for('login'))
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     form = LoginForm()
