@@ -4,7 +4,7 @@ import time
 from app import app
 from app.config import Config
 from webdav4.client import Client as ncClient
-import datetime
+from datetime import datetime
 
 def getWebDavClient() -> ncClient:
     if Config.NC_Client is not None:
@@ -17,6 +17,7 @@ def saveDB():
         ncWebDav = getWebDavClient()
         databasePath = Config.SQLALCHEMY_DATABASE_URI[10:]
         ncWebDav.upload_file(databasePath, f"ForumDesMetier/{datetime.now().year}/app-{datetime.now()}.db")
+        print(f"{datetime.now()}: DB saved")
     except Exception as e:
         Config.BackupErrorLog.append(e)
 
