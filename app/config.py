@@ -1,4 +1,5 @@
 import os
+import secrets
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Message for student id and pass. (Note: use html formating)
@@ -40,7 +41,7 @@ TIMES_SLOT = ["8h-9h","9h-10h","10h15-11h15"]
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess' #TODO: CHANGE IT FOR PROD!
+    SECRET_KEY = os.environ.get('SECRET_KEY') or secrets.token_hex()
     UPLOAD_PATH=os.environ.get('UPLOAD_PATH') or "./upload/"
     Open_Whish = True
     Setup_Done = False
