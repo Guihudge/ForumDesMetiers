@@ -16,7 +16,7 @@ Mot de passe: \t<b>{pwd}</b><br>
 REPARTION_STUDENT_MESSAGE="""
 Nom Prénom : {name} \t Classe: {section} <br>
 <center>
-<p><b> FORUM des MÉTIERS 2024 / 2025 </b></p>
+<p><b> FORUM des MÉTIERS </b></p>
 </center>
 <li>
     <ul><b>→ En arrivant au réfectoire, prend ce document et de quoi prendre des notes. </b></ul>
