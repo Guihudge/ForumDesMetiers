@@ -142,6 +142,8 @@ def restore():
 
 @app.route("/NCrestore", methods=['GET', 'POST'])
 def NCrestore():
+    if Config.Setup_Done:
+        return redirect(url_for('login'))
     try:
         webdav = getWebDavClient()
     except ValueError:

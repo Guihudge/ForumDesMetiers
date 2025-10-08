@@ -15,7 +15,9 @@ RUN pip3 install --break-system-packages -r requierment.txt
 RUN pip3 install --break-system-packages waitress
 
 # Copy app
-COPY --chown=root:root --exclude=app/app.db --exclude=*/__pycache__ --exclude=.venv/ --exclude=migrations/ . /ForumMetier/
+COPY --chown=root:root ./app /ForumMetier/app
+COPY ./forumMetier.py /ForumMetier
+RUN rm -rf /ForumMetier/app/__pycache__ /ForumMetier/app/*.db
 RUN mkdir -p /ForumMetier/upload
 RUN mkdir -p /ForumMetier/static
 
